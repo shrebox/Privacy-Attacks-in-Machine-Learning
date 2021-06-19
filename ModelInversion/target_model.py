@@ -100,12 +100,6 @@ def evaluate(mlp, iterator, criterion, device):
         
     return epoch_loss / len(iterator), epoch_acc / len(iterator)
 
-def epoch_time(start_time, end_time):
-    elapsed_time = end_time - start_time
-    elapsed_mins = int(elapsed_time / 60)
-    elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
-    return elapsed_mins, elapsed_secs
-
 if __name__ == '__main__':
     # dataset
     transform = transforms.Compose([
@@ -114,20 +108,20 @@ if __name__ == '__main__':
                     transforms.Normalize((0.5), (0.5))
                                 ])
 
-    train_dataset = datasets.ImageFolder("data_pgm/faces", transform=transform)
+    atnt_faces = datasets.ImageFolder("data_pgm/faces", transform=transform)
 
-    n = len(train_dataset)
-    n_val = int(0.3 * n)
+    I = [i for i in range(len(atnt_faces)) if i % 10 > 3]
+    I_VAL = [i for i in range(len(atnt_faces)) if i % 10 <= 3]
+
     BATCH_SIZE = 64
-
-    train_dataset = torch.utils.data.Subset(train_dataset, range(n_val, n))
+    train_dataset = torch.utils.data.Subset(atnt_faces, I)
     train_data_loader = data.DataLoader(train_dataset,
                                  shuffle=True,
                                  batch_size=BATCH_SIZE)
 
-    validation_dataset = torch.utils.data.Subset(train_dataset, range(n_val))
+    validation_dataset = torch.utils.data.Subset(atnt_faces, I_VAL)
     validation_data_loader = data.DataLoader(validation_dataset,
-                                 batch_size=BATCH_SIZE)                
+                                 batch_size=BATCH_SIZE)   
 
     # model                        
     INPUT_DIM = 112 * 92
