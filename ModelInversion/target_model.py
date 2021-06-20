@@ -3,27 +3,14 @@
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data as data
 
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
-from sklearn import metrics
-from sklearn import decomposition
-from sklearn import manifold
-import matplotlib.pyplot as plt
-import numpy as np
-
-import copy
-import random
-import time
-
 # set seeds
 SEED = 12
-random.seed(SEED)
-np.random.seed(SEED)
 torch.manual_seed(SEED)
 torch.cuda.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
@@ -110,16 +97,16 @@ if __name__ == '__main__':
 
     atnt_faces = datasets.ImageFolder("data_pgm/faces", transform=transform)
 
-    I = [i for i in range(len(atnt_faces)) if i % 10 > 3]
-    I_VAL = [i for i in range(len(atnt_faces)) if i % 10 <= 3]
+    i = [i for i in range(len(atnt_faces)) if i % 10 > 3]
+    i_val = [i for i in range(len(atnt_faces)) if i % 10 <= 3]
 
     BATCH_SIZE = 64
-    train_dataset = torch.utils.data.Subset(atnt_faces, I)
+    train_dataset = torch.utils.data.Subset(atnt_faces, i)
     train_data_loader = data.DataLoader(train_dataset,
                                  shuffle=True,
                                  batch_size=BATCH_SIZE)
 
-    validation_dataset = torch.utils.data.Subset(atnt_faces, I_VAL)
+    validation_dataset = torch.utils.data.Subset(atnt_faces, i_val)
     validation_data_loader = data.DataLoader(validation_dataset,
                                  batch_size=BATCH_SIZE)   
 
@@ -136,8 +123,7 @@ if __name__ == '__main__':
     optimizer = optim.Adam(mlp.parameters())
 
     # main loop
-    EPOCHS = 10
-
+    EPOCHS = 30
     best_valid_loss = float('inf')
 
     for epoch in range(EPOCHS):
@@ -152,3 +138,5 @@ if __name__ == '__main__':
         print(f'Epoch: {epoch+1:02}')
         print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc*100:.2f}%')
+    
+    torch.save(mlp, 'atnt-mlp-model.pt')
