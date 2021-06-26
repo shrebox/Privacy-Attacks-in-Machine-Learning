@@ -5,6 +5,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 from PIL import Image
+import matplotlib.pyplot as plt
+
 
 class MLP(nn.Module):
     def __init__(self, input_dim, output_dim):
@@ -22,36 +24,69 @@ class MLP(nn.Module):
 
         return output, h
 
+
 def get_prediction(image_bytes):
 
     tensor = transform_image(image_bytes=image_bytes)
     y_pred, _ = model(tensor)
-    y_prob = F.softmax(y_pred, dim = -1)
+    y_prob = F.softmax(y_pred, dim=-1)
     prob, label_index = y_prob.max(1)
 
     return label_index.item(), prob.item()
 
+
 def transform_image(image_bytes):
 
     transform = transforms.Compose([
-                    #transforms.Grayscale(),
                     transforms.ToTensor(),
                     transforms.Normalize((0.5), (0.5))
                                 ])
     image = Image.open(io.BytesIO(image_bytes))
-    
-    return transform(image).unsqueeze(0)
+
+    return transform(image)
+
+
+def mi_face(label_index, num_iterations, gradient_step):
+
+    criterion = torch.nn.CrossEntropyLoss()
+    tensor = torch.zeros(112, 92).unsqueeze(0)
+    tensor.requires_grad = True
+    min_loss = float("inf")
+    image = tensor
+    pred, _ = model(tensor)
+
+    for i in range(num_iterations):
+        loss = criterion(pred, torch.tensor([label_index]))
+        loss.backward()
+        with torch.no_grad():
+            # tensor = torch.clamp(tensor - gradient_step * tensor.grad, 0, 255)
+            tensor = (tensor - gradient_step * tensor.grad)
+            if loss < min_loss:
+                min_loss = loss
+                image = tensor
+        tensor.requires_grad = True
+        pred, _ = model(tensor)
+        print(min_loss)
+
+    return image
+
 
 if __name__ == '__main__':
 
     model = torch.load('atnt-mlp-model.pt')
     model.eval()
 
-    class_index = json.load(open('class_index.json')) # random generated dummy names
+    # random generated dummy names
+    class_index = json.load(open('class_index.json'))
 
-    with open('data_pgm/faces/s01/1.pgm', 'rb') as f:
-        image_bytes = f.read()
-        label_index, prob = get_prediction(image_bytes=image_bytes)
-        label = class_index[str(label_index)]
-        print(label, prob)
+#    with open('data_pgm/faces/s01/1.pgm', 'rb') as f:
+#        image_bytes = f.read()
+#        label_index, prob = get_prediction(image_bytes=image_bytes)
+#        label = class_index[str(label_index)]
+#        print(label, prob)
+
+    image = mi_face(4, 30, 0.1)
+
+    plt.imshow(image.permute(1, 2, 0).detach().numpy())
+    plt.show()
 
