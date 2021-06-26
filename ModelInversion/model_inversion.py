@@ -50,12 +50,12 @@ def mi_face(label_index, num_iterations, gradient_step):
 
     criterion = torch.nn.CrossEntropyLoss()
     tensor = torch.zeros(112, 92).unsqueeze(0)
+    image = tensor
     tensor.requires_grad = True
     min_loss = float("inf")
-    image = tensor
-    pred, _ = model(tensor)
 
     for i in range(num_iterations):
+        pred, _ = model(tensor)
         loss = criterion(pred, torch.tensor([label_index]))
         loss.backward()
         with torch.no_grad():
@@ -65,7 +65,6 @@ def mi_face(label_index, num_iterations, gradient_step):
                 min_loss = loss
                 image = tensor
         tensor.requires_grad = True
-        pred, _ = model(tensor)
         print(min_loss)
 
     return image
