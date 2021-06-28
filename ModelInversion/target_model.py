@@ -88,18 +88,21 @@ def evaluate(mlp, iterator, criterion, device):
     return epoch_loss / len(iterator), epoch_acc / len(iterator)
 
 if __name__ == '__main__':
-    # dataset
+    # transfrom, wee need grayscale to convert the images to 1 channel
     transform = transforms.Compose([
                     transforms.Grayscale(),
                     transforms.ToTensor(),
                     transforms.Normalize((0.5), (0.5))
                                 ])
 
+    # load dataset
     atnt_faces = datasets.ImageFolder("data_pgm/faces", transform=transform)
 
+    # split dataset: 3 images of every class as validation set
     i = [i for i in range(len(atnt_faces)) if i % 10 > 3]
     i_val = [i for i in range(len(atnt_faces)) if i % 10 <= 3]
 
+    # load data
     BATCH_SIZE = 64
     train_dataset = torch.utils.data.Subset(atnt_faces, i)
     train_data_loader = data.DataLoader(train_dataset,
@@ -110,14 +113,18 @@ if __name__ == '__main__':
     validation_data_loader = data.DataLoader(validation_dataset,
                                  batch_size=BATCH_SIZE)   
 
-    # model                        
+    # define dimensions                        
     INPUT_DIM = 112 * 92
     OUTPUT_DIM = 40
+
+    # create model
     mlp = MLP(INPUT_DIM, OUTPUT_DIM)
 
+    # set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     mlp = mlp.to(device)
 
+    # set criterion and optimizer
     criterion = nn.CrossEntropyLoss()
     criterion = criterion.to(device)
     optimizer = optim.Adam(mlp.parameters())
@@ -139,4 +146,5 @@ if __name__ == '__main__':
         print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc*100:.2f}%')
     
+    # save model (to use for inversion)
     torch.save(mlp, 'atnt-mlp-model.pt')
