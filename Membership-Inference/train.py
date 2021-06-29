@@ -4,10 +4,6 @@ import copy
 import os
 import numpy as np
 
-def update_lr(optimizer, lr):
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
-
 def prepare_attack_data(model,train_loader,device):
 
     attack_X = []
@@ -99,77 +95,85 @@ def evaluate(model,
     
     return val_loss, val_acc
 
-
+###############################
+# Training Attack Model
+###############################
 def train_attack_model(shadowX, 
                     shadowY,
                     model,
                     criterion,
                     optimizer,
+                    scheduler,
                     device,
                     epochs=10,
-                    batch_size=20,
-                    lr=1e-3,
-                    lr_decay=0.99):
+                    batch_size=20):
         
-
         print(shadowX.shape)
         print(shadowY.shape)
-
-        num_train = shadowX.shape[0]
-        #iteractions_per_epoch = max(num_train / batch_size, 1)
 
         correct = 0
         total = 0
         train_loss = 0
-        
+
+        total = shadowX.shape[0]
+        iteractions_per_epoch = max(total / batch_size, 1)
+
+        #Training and Validation split for Attack Model
+        valid_ratio = 0.95
+        n_train = int(total * valid_ratio)
+        n_val_samples = total - n_train
+        train_data, valid_data = torch.utils.data.random_split(shadowX, 
+                                                               [n_train, n_val_samples])
+
         model.train()
-        for _ in range(epochs):
+        for i in range(epochs):
+            for it in range(iteractions_per_epoch):
+                #Indices list for random subset of training samples
+                indx = np.random.choice(n_train, batch_size, replace=False)
 
-            #Indices list for random subset of training samples
-            indx = np.random.choice(num_train, batch_size)
+                #Training batch and their lablels
+                X_batch = train_data[indx].to(device)
+                Y_batch = shadowY[indx].to(device)
 
-            #Training batch and their lablels
-            X_batch = shadowX[indx].to(device)
-            Y_batch = shadowY[indx].to(device)
+                #Forward Pass
+                outputs = model(X_batch)
 
-            #Forward Pass
-            outputs = model(X_batch)
+                #Caluclate the loss
+                loss = criterion(outputs,Y_batch)
 
-            #Caluclate the loss
-            loss = criterion(outputs,Y_batch)
-
-            # Backward pass and optimize
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()       
+                # Backward pass and optimize
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()       
             
-            #Record Loss
-            train_loss += loss.item()
+                #Record Loss
+                train_loss += loss.item()
 
-            #Predictions for accuracy calculation
-            _, predicted = torch.max(outputs.data, 1)
-            total += Y_batch.shape[0]
-            correct += (predicted == Y_batch).sum().item()
+                #Predictions for accuracy calculation
+                _, predicted = torch.max(outputs.data, 1)
+                total += Y_batch.shape[0]
+                correct += (predicted == Y_batch).sum().item()
 
-        #Per epoch valdication accuracy calculation
-        train_acc = correct / total
-        train_loss = train_loss / total
+            scheduler.step()
 
-        return train_loss, train_acc
+            #Per epoch valdication accuracy calculation
+            train_acc = correct / total
+            train_loss = train_loss / total
 
-
+###################################
+# Training Target and Shadow Model
+# #################################            
 def train_model(model,
                 train_loader,
                 val_loader,
                 test_loader,
                 loss,
                 optimizer,
+                scheduler,
                 device,
                 model_path,
                 verbose=False,
                 num_epochs=50,
-                learning_rate=1e-3,
-                learning_rate_decay=0.99,
                 is_target=False):
     
     best_valacc = 0
@@ -185,9 +189,7 @@ def train_model(model,
         valid_loss_hist.append(valid_loss)
         train_loss_hist.append(train_loss)
 
-        # Code to update the lr
-        learning_rate *= learning_rate_decay
-        update_lr(optimizer, learning_rate)
+        scheduler.step()
 
         print ('Epoch [{}/{}], Train Loss: {:.3f}, Train Acc: {:.2f}% | Val. Loss: {:.3f}, Val. Acc: {:.2f}%'
                    .format(epoch+1, num_epochs, train_loss, train_acc*100, valid_loss, valid_acc*100))
@@ -248,10 +250,18 @@ def train_model(model,
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
+            if not is_target and total == 5000:
+                #Using only 5000 test samples for Shadow Model 
+                break
+        
+        if is_target:
+            print('Test Accuracy of the Target model: {:.2f}%'.format(100 * correct / total))
+        else:
+            print('Test Accuracy of the Shadow model on {} images: {:.2f}%'.format(total, 100 * correct / total)) 
     
     
-    dataX = np.vstack(dataX)
-    dataY = np.concatenate(dataY)
+    dataX = np.vstack(dataX).to(device)
+    dataY = np.concatenate(dataY).to(device)
     
     return dataX, dataY
 

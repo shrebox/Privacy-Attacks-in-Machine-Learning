@@ -4,8 +4,8 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data.sampler import SubsetRandomSampler
-from .model import ConvNet,VggModel,AttackMLP
-from .train import  train_model, train_attack_model
+from model import ConvNet,VggModel,AttackMLP
+from train import  train_model, train_attack_model
 import argparse
 import numpy as np
 import os
@@ -14,42 +14,61 @@ import copy
 random_seed = 1234
 
 ########################
-# Model Hyperparameters#
+# Model Hyperparameters
 ########################
 #ConvNet Model Hidden Layers
-hidden_layers = [128, 512, 512, 512, 512, 512] 
+# hidden_layers = [128, 512, 512, 512, 512, 512] 
+hidden_layers = [64, 128, 128, 128]
 #FC layers for pretrained model
 layer_config= [512, 256] 
+#For CIFAR-10 and MNIST dataset
 num_classes = 10
 #No. of training epocs
 num_epochs = 30
 #how many samples per batch to load
-batch_size = 200
+batch_size = 50
+#learning rate
 learning_rate = 1e-2
-learning_rate_decay = 0.99
-reg=0.001
+#Learning rate decay 
+lr_decay = 0.96
+#Regularizer
+reg=1e-2
 #percentage of training data to use for target model
 target_shadow_split = 0.6
 #percentage of training set to use as validation
 valid_ratio = 0.9
-#for CNN
+#Input Channels(RGB)for CIFAR-10
 input_dim = 3
-#For MLP 
+#For MLP attack mode
 input_size = 3 
+
+################################
+#Attack Model Hyperparameters
+################################
+NUM_EPOCHS = 50
+BATCH_SIZE = 10
+#Learning rate
+LR_ATTACK = 1e-2 
+#L2 Regulariser(Weight decay)
+REG = 1e-6 
+LR_DECAY = 0.96
+#No of hidden units
+n_hidden = 64
 
 
 def get_cmd_arguments():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="MI Attack")
+    # group = parser.add_mutually_exclusive_group(required=True)
     parser.add_argument('--dataset', default='CIFAR10', choices=['CIFAR10', 'MNIST'], help='Which dataset to use (CIFAR10 or MNIST)')
-    parser.add_argument('--dataFolderPath', default='./data', help='Path to store data')
-    parser.add_argument('--modelFolderPath', deafult='./model', help='Path to save or load model checkpoints')
+    parser.add_argument('--dataPath', default='./data', help='Path to store data')
+    parser.add_argument('--modelPath', default='./model', help='Path to save or load model checkpoints')
     parser.add_argument('--trainTargetModel', action='store_true', help='Train a target model, if false then load an already trained model')
     parser.add_argument('--trainShadowModel', action='store_true', help='Train a shadow model, if false then load an already trained model')
     parser.add_argument('--pretrained',action='store_true', help='Use pretrained target model from Pytorch Model Zoo, if false then use the same model without pretrained weights')
-    parser.add_argument('--need_augm',action='store_true', help='To use data augmentation on target and shadow training set or not')
     parser.add_argument('--use_same_arch',action='store_true', help='If True, we use ConvNet model for both Target and Shadow Model training')
-    parser.add_argument('--use_same_hyperparam',action='store_true', help='To use same hyperparameter values for training Target and Shadow Model')
-    parser.add_argument('--verbose',action='store_true', help='For extra print statements')
+    parser.add_argument('--need_augm',action='store_true', help='To use data augmentation on target and shadow training set or not')
+    parser.add_argument('--use_same_hyperparam',action='store_false', help='To use same hyperparameter values for training Target and Shadow Model')
+    parser.add_argument('--verbose',action='store_true', help='Add Verbosity')
     return parser.parse_args()
 
 def get_data_loader(dataset,
@@ -106,7 +125,9 @@ def get_data_loader(dataset,
                                                     transforms.RandomAffine(degrees =  0, translate = (0.125, 0.125)),
                                                     transforms.ToTensor(),
                                                     normalize]) 
-     
+            else:
+                train_transforms = transforms.Compose([transforms.ToTensor(),
+                                                normalize])
 
         #load the train and test dataset
         cifar10_train_data = torchvision.datasets.CIFAR10(root=data_dir,
@@ -239,6 +260,7 @@ def create_attack(args):
                 print("\t",name)
         
         optimizer = torch.optim.Adam(params_to_update, lr=learning_rate, weight_decay=reg)
+        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer,gamma=lr_decay)
 
         targetX, targetY = train_model(target_model,
                                     target_loader,
@@ -246,12 +268,11 @@ def create_attack(args):
                                     test_loader,
                                     loss,
                                     optimizer,
+                                    lr_scheduler,
                                     device,
                                     modelDir,
                                     args.verbose,
                                     num_epochs,
-                                    learning_rate,
-                                    learning_rate_decay,
                                     is_target=True)
         
     if (args.trainShadowModel):
@@ -263,6 +284,7 @@ def create_attack(args):
         # Loss and optimizer
         loss = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(shadow_model.parameters(), lr=learning_rate, weight_decay=reg)
+        lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer,gamma=lr_decay)
 
         shadowX, shadowY= train_model(shadow_model,
                                     shadow_loader,
@@ -270,12 +292,11 @@ def create_attack(args):
                                     test_loader,
                                     loss,
                                     optimizer,
+                                    lr_scheduler,
                                     device,
                                     modelDir,
                                     args.verbose,
                                     num_epochs,
-                                    learning_rate,
-                                    learning_rate_decay,
                                     is_target=False)
     
     ################################
@@ -283,9 +304,13 @@ def create_attack(args):
     ################################
     attack_model = AttackMLP(input_size, hidden_size=64)
     print(attack_model)
-
-    loss = nn.BCELoss()
-    optimizer = torch.optim.SGD(shadow_model.parameters(), lr=1e-2)
+    
+    #In ML-Leaks paper, Softmax was used at the output layer
+    #CE loss function mimics the same function, so therefore there is no softmax 
+    #activation defined at the output layer in AttackMLP model.
+    loss = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(shadow_model.parameters(), lr=LR, weight_decay=REG)
+    lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer,gamma=LR_DECAY)
 
 
     attack_acc, attack_loss = train_attack_model(shadowX,
@@ -293,15 +318,13 @@ def create_attack(args):
                                                 attack_model,
                                                 loss,
                                                 optimizer,
+                                                lr_scheduler,
                                                 device,
-                                                epochs=50,
-                                                batch_size=10,
-                                                lr=1e-2,
-                                                lr_decay=0.99)
+                                                NUM_EPOCHS,
+                                                BATCH_SIZE,
+                                                n_hidden)
 
                                     
-
-
 
 if __name__ == '__main__':
     #get command line arguments from the user

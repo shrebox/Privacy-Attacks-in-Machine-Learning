@@ -7,21 +7,23 @@ from torchvision import models
 class ConvNet(nn.Module):
     def __init__(self, input_dim, hidden_layers, num_classes):
         super(ConvNet, self).__init__()
-        self.input_dim = input_dim
-        self.hidden_layers = hidden_layers
-        self.num_classes = num_classes
         layers = []
-        layers.append(nn.Conv2d(in_channels=self.input_dim, out_channels=self.hidden_layers[0], kernel_size=3, padding=1))
-        layers.append(nn.BatchNorm2d(self.hidden_layers[0]))
+        layers.append(nn.Conv2d(in_channels=input_dim, out_channels=hidden_layers[0], kernel_size=3, padding=1))
+        layers.append(nn.BatchNorm2d(hidden_layers[0]))
         layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
         layers.append(nn.ReLU(inplace=True))
-        for i in range(1, len(hidden_layers)-1):
-            layers.append(nn.Conv2d(in_channels=self.hidden_layers[i-1], out_channels=self.hidden_layers[i], kernel_size=3, padding=1))
-            layers.append(nn.BatchNorm2d(self.hidden_layers[i]))
-            layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
-            layers.append(nn.ReLU(inplace=True))
+        layers.append(nn.Conv2d(in_channels=hidden_layers[0], out_channels=hidden_layers[1], kernel_size=3, padding=1))
+        layers.append(nn.BatchNorm2d(hidden_layers[1]))
+        layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
+        layers.append(nn.ReLU(inplace=True))
+        layers.append(nn.Conv2d(in_channels=hidden_layers[1], out_channels=hidden_layers[2], kernel_size=3, padding=1))
+        layers.append(nn.BatchNorm2d(hidden_layers[2]))
+        layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
+        layers.append(nn.ReLU(inplace=True))
         layers.append(nn.Flatten())
-        layers.append(nn.Linear(self.hidden_layers[-1], self.num_classes))
+        layers.append(nn.Linear(2048, hidden_layers[3]))
+        layers.append(nn.ReLU(inplace=True))
+        layers.append(nn.Linear(hidden_layers[3], num_classes))
         self.conv_layer = nn.Sequential(*layers)
         
     def forward(self, x):
@@ -33,8 +35,7 @@ class VggModel(nn.Module):
     def __init__(self, num_classes,layer_config,pretrained=True):
         super(VggModel, self).__init__()
         #Load the pretrained VGG11_BN model
-        self.pretrained = pretrained
-        if self.pretrained:
+        if pretrained:
             pt_vgg = models.vgg11_bn(pretrained=pretrained)
 
             #Deleting old FC layers from pretrained VGG model
@@ -51,29 +52,22 @@ class VggModel(nn.Module):
                 nn.ReLU(inplace=True),
                 nn.Linear(layer_config[1], num_classes),
             )
-        else: # Baseline VGG11_BN model without IMAGENET weights
-            self.vgg_scratch = models.vgg11_bn(pretrained=pretrained)
 
     def forward(self, x):
-        if self.pretrained:
-            x = self.model_features(x)
-            x = x.squeeze()
-            out = self.model_classifier(x)
-        else:
-            out = self.vgg_scratch(x)
+        x = self.model_features(x)
+        x = x.squeeze()
+        out = self.model_classifier(x)
         return out
 
 class AttackMLP(nn.Module):
     # Attack Model
         def __init__(self, input_size, hidden_size=64):
             super(AttackMLP, self).__init__()
-            self.fc1 = torch.nn.Linear(input_size, hidden_size)
-            self.relu = torch.nn.ReLU()
-            self.fc2 = torch.nn.Linear(hidden_size, 2)
-            self.softmax = nn.Softmax(dim=1)
+            self.layers = nn.Sequential(
+                    nn.Linear(input_size, hidden_size),
+                    nn.ReLU(),
+                    nn.Linear(hidden_size, 2)
+            )
         def forward(self, x):
-            hidden = self.fc1(x)
-            relu = self.relu(hidden)
-            output = self.fc2(relu)
-            output = self.softmax(output)
+            output = self.layers(x)
             return output
