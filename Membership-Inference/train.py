@@ -106,7 +106,8 @@ def train_attack_model(shadowX,
                     scheduler,
                     device,
                     epochs=10,
-                    batch_size=20):
+                    batch_size=20,
+                    n_hidden=100):
         
         print(shadowX.shape)
         print(shadowY.shape)
