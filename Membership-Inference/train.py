@@ -19,7 +19,7 @@ def prepare_attack_data(model,train_loader,device):
             #Top 3 posterior probabilities(high to low) for train samples
             topkvalues, _ = torch.topk(outputs.data, 3, dim=1)
             attack_X.append(topkvalues)
-            attack_Y.append(np.ones(len(labels)))
+            attack_Y.append(torch.ones(len(labels)))
 
     return attack_X, attack_Y
     
@@ -198,6 +198,8 @@ def train_model(model,
             best_valacc = valid_acc
             #Store best model weights
             best_model = copy.deepcopy(model.state_dict())
+            target_path = os.path.join(model_path,'best_target_model.ckpt')
+            torch.save(best_model, target_path)
             stop_count = 0
         else:
             stop_count+=1
@@ -244,7 +246,7 @@ def train_model(model,
             #Top 3 posterior probabilities(high to low) for test samples
             topkvalues, _ = torch.topk(outputs.data, 3, dim=1)
             dataX.append(topkvalues)
-            dataY.append(np.zeros(len(labels)))
+            dataY.append(torch.zeros(len(labels)))
 
             #Predictions for accuracy calculations
             _, predicted = torch.max(outputs.data, 1)
@@ -259,9 +261,12 @@ def train_model(model,
         else:
             print('Test Accuracy of the Shadow model on {} images: {:.2f}%'.format(total, 100 * correct / total)) 
     
-    
-    dataX = np.vstack(dataX).to(device)
-    dataY = np.concatenate(dataY).to(device)
+    # print(dataX)
+    # print(dataY)
+    # dataX = dataX.cpu().numpy()
+    # dataY = dataY.cpu().numpy()
+    dataX = torch.stack(dataX)
+    dataY = torch.stack(dataY)
     
     return dataX, dataY
 

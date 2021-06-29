@@ -36,7 +36,7 @@ reg=1e-2
 #percentage of training data to use for target model
 target_shadow_split = 0.6
 #percentage of training set to use as validation
-valid_ratio = 0.9
+valid_ratio = 0.95
 #Input Channels(RGB)for CIFAR-10
 input_dim = 3
 #For MLP attack mode
@@ -164,9 +164,11 @@ def get_data_loader(dataset,
         valid_data = copy.deepcopy(valid_data)
         valid_data.dataset.transform = test_transforms
 
-        print(f'Number of training examples: {len(train_data)}')
-        print(f'Number of validation examples: {len(valid_data)}')
-        print(f'Number of testing examples: {len(cifar10_test_data)}')
+        print(f'Total training samples: {len(train_data)}')
+        print(f'Total validation samples: {len(valid_data)}')
+        print(f'Total testing samples: {len(cifar10_test_data)}')
+        print(f'Number of target samples: {len(target_train_idx)}')
+        print(f'Number of shadow samples: {len(shadow_train_idx)}')
 
         #-------------------------------------------------
         # Data loader
@@ -309,7 +311,7 @@ def create_attack(args):
     #CE loss function mimics the same function, so therefore there is no softmax 
     #activation defined at the output layer in AttackMLP model.
     loss = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(shadow_model.parameters(), lr=LR, weight_decay=REG)
+    optimizer = torch.optim.SGD(shadow_model.parameters(), lr=LR_ATTACK, weight_decay=REG)
     lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer,gamma=LR_DECAY)
 
 
