@@ -2,11 +2,45 @@ import torch
 import torch.nn as nn
 from torchvision import models
 
+#####################################################
+# Define Target, Shadow and Attack Model Architecture
+#####################################################
 
-#Target/Shadow CNN model
-class ConvNet(nn.Module):
+#Target Model CNN based
+class TargetNet(nn.Module):
     def __init__(self, input_dim, hidden_layers, num_classes):
-        super(ConvNet, self).__init__()
+        super(TargetNet, self).__init__()
+        layers = []
+        layers.append(nn.Conv2d(in_channels=input_dim, out_channels=hidden_layers[0], kernel_size=3, padding=1))
+        layers.append(nn.BatchNorm2d(hidden_layers[0]))
+        layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
+        layers.append(nn.ReLU(inplace=True))
+        for i in range(1, len(hidden_layers)-1):
+            layers.append(nn.Conv2d(in_channels=hidden_layers[i-1], out_channels=hidden_layers[i], kernel_size=3, padding=1))
+            layers.append(nn.BatchNorm2d(hidden_layers[i]))
+            layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
+            layers.append(nn.ReLU(inplace=True))
+        layers.append(nn.Flatten())
+        layers.append(nn.Linear(512, num_classes))
+        self.conv_layer = nn.Sequential(*layers)
+
+    def forward(self, x):
+        #################################################################################
+        # TODO: Implement the forward pass computations                                 #
+        #################################################################################
+        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+
+        out = self.conv_layer(x)
+        # print(out.shape)
+
+        # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        return out
+        
+        
+#Shadow Model CNN based
+class ShadowNet(nn.Module):
+    def __init__(self, input_dim, hidden_layers, num_classes):
+        super(ShadowNet, self).__init__()
         layers = []
         layers.append(nn.Conv2d(in_channels=input_dim, out_channels=hidden_layers[0], kernel_size=3, padding=1))
         layers.append(nn.BatchNorm2d(hidden_layers[0]))
@@ -30,7 +64,7 @@ class ConvNet(nn.Module):
         out = self.conv_layer(x)
         return out
 
-#Target pretrained Model
+#Pretrained VGG11 model for Target
 class VggModel(nn.Module):
     def __init__(self, num_classes,layer_config,pretrained=True):
         super(VggModel, self).__init__()
@@ -59,15 +93,16 @@ class VggModel(nn.Module):
         out = self.model_classifier(x)
         return out
 
+ #Attack MLP Model
 class AttackMLP(nn.Module):
-    # Attack Model
-        def __init__(self, input_size, hidden_size=64):
-            super(AttackMLP, self).__init__()
-            self.layers = nn.Sequential(
-                    nn.Linear(input_size, hidden_size),
-                    nn.ReLU(),
-                    nn.Linear(hidden_size, 2)
-            )
-        def forward(self, x):
-            output = self.layers(x)
-            return output
+   
+    def __init__(self, input_size, hidden_size=64,out_classes=2):
+        super(AttackMLP, self).__init__()
+        self.fc1 = torch.nn.Linear(input_size, hidden_size)
+        self.relu = torch.nn.ReLU(inplace=True)
+        self.fc2 = torch.nn.Linear(hidden_size,out_classes)
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.relu(out)
+        out = self.fc2(out)
+        return out          
