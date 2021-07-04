@@ -8,6 +8,8 @@ Project references: https://docs.google.com/document/d/1pcAXpFTQDd4hGnLlhSa4PsQS
 
 Timeline: https://docs.google.com/spreadsheets/d/1dKo0ajoctzqFjUMUhbgnqzykvuLyO6nnrc5uTpatqck/edit?usp=sharing
 
+Results and Inferences: https://docs.google.com/document/d/1Jn6JVkqcn76BlE1HHXzotEmj8wqTgUjRZsF4f16uiK4/edit
+
 ## Model Inverison
 
 ### Data
@@ -24,7 +26,8 @@ To do so we perform a simple gradient descent. We query the model with a random 
   - ```gradient_step```: the gradient step, metric of the gradient decent algrothim (x - gradient_step * x.gradient)
 - Output: reconstructed image in the form of a 112 * 92 tensor, just like the models input dim.
 
-
+```main```
+- see code comments for details
 
 ### target_model.py
 #### Model
@@ -32,9 +35,6 @@ To do so we perform a simple gradient descent. We query the model with a random 
 - Input layer dim: 112 * 92
 - Hidden layer dim: 3000 (sigmoid)
 - Output layer dim: 40
-
-```main```
-- see code comments for details
 
 #### Functions
 ```def calculate_accuracy```
