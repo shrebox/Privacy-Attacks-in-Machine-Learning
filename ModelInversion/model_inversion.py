@@ -40,7 +40,7 @@ def mi_face(label_index, num_iterations, gradient_step):
         # get the prediction probs
         pred, _ = model(tensor)
 
-        # calculate the loss for the class we want to reconstruct
+        # calculate the loss and gardient for the class we want to reconstruct
         loss = criterion(pred, torch.tensor([label_index]))
         loss.backward()
 
@@ -48,7 +48,7 @@ def mi_face(label_index, num_iterations, gradient_step):
             # apply gradient decent formula
             # tensor = torch.clamp(tensor - gradient_step * tensor.grad, 0, 255)
             tensor = (tensor - gradient_step * tensor.grad)
-
+            
         # set image = tensor only if the new loss is the min from all iterations
         if loss < min_loss:
             min_loss = loss
@@ -68,9 +68,9 @@ if __name__ == '__main__':
     class_index = json.load(open('class_index.json'))
 
     # call gradient decent algorithm
-    image = mi_face(10, 5, 0.1)
+    image = mi_face(0, 1, 0.1)
 
     #plot reconstructed image
-    plt.imshow(image.squeeze().detach().numpy(), cmap=plt.cm.binary)
+    plt.imshow(image.squeeze().detach().numpy(), cmap='gray')
     plt.show()
 
