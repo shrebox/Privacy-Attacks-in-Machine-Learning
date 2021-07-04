@@ -48,11 +48,11 @@ def mi_face(label_index, num_iterations, gradient_step):
             # apply gradient decent formula
             # tensor = torch.clamp(tensor - gradient_step * tensor.grad, 0, 255)
             tensor = (tensor - gradient_step * tensor.grad)
-            
-            # set image = tensor only if the new loss is the min from all iterations
-            if loss < min_loss:
-                min_loss = loss
-                image = tensor
+
+        # set image = tensor only if the new loss is the min from all iterations
+        if loss < min_loss:
+            min_loss = loss
+            image = tensor
         print(min_loss)
 
     return image
@@ -68,9 +68,9 @@ if __name__ == '__main__':
     class_index = json.load(open('class_index.json'))
 
     # call gradient decent algorithm
-    image = mi_face(4, 30, 0.1)
+    image = mi_face(10, 5, 0.1)
 
     #plot reconstructed image
-    plt.imshow(image.permute(1, 2, 0).detach().numpy())
+    plt.imshow(image.squeeze().detach().numpy(), cmap=plt.cm.binary)
     plt.show()
 
