@@ -1,5 +1,6 @@
 import io
 import json
+import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -45,7 +46,7 @@ def mi_face(label_index, num_iterations, gradient_step):
         loss.backward()
 
         with torch.no_grad():
-            # apply gradient decent formula
+            # apply gradient descent
             # tensor = torch.clamp(tensor - gradient_step * tensor.grad, 0, 255)
             tensor = (tensor - gradient_step * tensor.grad)
             
@@ -60,17 +61,42 @@ def mi_face(label_index, num_iterations, gradient_step):
 
 if __name__ == '__main__':
 
-    #load the mdoel and set it to eval mode
+    #load the model and set it to eval mode
     model = torch.load('atnt-mlp-model.pt')
     model.eval()
 
-    # random generated dummy names
-    class_index = json.load(open('class_index.json'))
+    #set params
+    iterations = 1000
+    gradient_step_size = 0.1
 
-    # call gradient decent algorithm
-    image = mi_face(0, 1, 0.1)
+    # create figure
+    fig, axs = plt.subplots(8, 10)
+    fig.set_size_inches(20, 20)
+
+    random.seed(7)
+    count = 0
+    for i in range(0, 8, 2):
+        for j in range(10):
+            # get random image from respective class
+            count += 1
+            print('Class ' + str(count))
+            ran = random.randint(1, 10)
+            path = 'data_pgm/faces/s0' + str(count) + '/' + str(ran) + '.pgm' if count < 10 else 'data_pgm/faces/s' + str(count) + '/' + str(ran) + '.pgm'
+            with open(path, 'rb') as f:
+                original = plt.imread(f)
+
+            # reconstruct respective class
+            reconstruction = mi_face(count-1, iterations, gradient_step_size)
+
+            # add both images to the plot
+            axs[i, j].imshow(original, cmap='gray')
+            axs[i+1, j].imshow(reconstruction.squeeze().detach().numpy(), cmap='gray')
+            axs[i, j].axis('off')
+            axs[i+1, j].axis('off')
 
     #plot reconstructed image
-    plt.imshow(image.squeeze().detach().numpy(), cmap='gray')
+    fig.suptitle('Images reconstructed with ' + str(iterations) + ' interations of mi_face. Find the reconstruction below the respective original.', fontsize=20)
+    fig.savefig('results_' + str(iterations) + '.png', dpi=100)
     plt.show()
+
 
