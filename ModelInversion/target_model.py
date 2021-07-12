@@ -140,11 +140,9 @@ if __name__ == '__main__':
 
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
-            torch.save(mlp.state_dict(), 'atnt-mlp.pt')
+            torch.save(mlp, 'atnt-mlp-model.pt')
 
         print(f'Epoch: {epoch+1:02}')
         print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc*100:.2f}%')
-    
-    # save model (to use for inversion)
-    torch.save(mlp, 'atnt-mlp-model.pt')
+        

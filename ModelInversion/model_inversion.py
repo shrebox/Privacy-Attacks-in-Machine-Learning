@@ -25,7 +25,7 @@ class MLP(nn.Module):
 
 def mi_face(label_index, num_iterations, gradient_step):
     # set the loss function
-    criterion = torch.nn.CrossEntropyLoss()
+    crit = torch.nn.CrossEntropyLoss()
 
     # initialize two 112 * 92 tensors with zeros
     tensor = torch.zeros(112, 92).unsqueeze(0)
@@ -40,7 +40,7 @@ def mi_face(label_index, num_iterations, gradient_step):
         pred, _ = model(tensor)
 
         # calculate the loss and gardient for the class we want to reconstruct
-        loss = criterion(pred, torch.tensor([label_index]))
+        loss = crit(pred, torch.tensor([label_index]))
         loss.backward()
 
         with torch.no_grad():
@@ -104,6 +104,6 @@ if __name__ == '__main__':
     # plot reconstructed image
     fig.suptitle('Images reconstructed with ' + str(
         args.iterations) + ' interations of mi_face. Find the reconstruction below the respective original.', fontsize=20)
-    fig.savefig('results_' + str(args.iterations) + '.png', dpi=100)
+    fig.savefig('results/results_' + str(args.iterations) + '.png', dpi=100)
     plt.show()
 

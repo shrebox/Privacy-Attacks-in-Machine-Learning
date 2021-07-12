@@ -1,58 +1,31 @@
-## Model Inverison
+## Model Inversion
 
-### How to run:
-
-$ python model_inversions.py --help --> To see all the possible argument options
-
-usage: Membership Inference Attack [-h]
-                                   [--modelPath MODELPATH]
-                                   [--iterations ITERATIONS]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --modelPath           path of the targert model, default: Our Target Model
-  --iterations          number of iterations mi_face should perform
-
-
-### Data
-We are using a dataset called 'Atnt Dataset of Faces'. It has 1 channel images of 40 different persons, 10 different images for each person. The images have a dimension of 112 * 92 pixels.
-
-### model_inversion.py
-We perform a model inversion attack. More concrete we perform an reconstruction attack, where given a label we reconstruct an image of the respective class.
-To do so we perform a simple gradient descent. We query the model with a random image, and the try to minimze 1-probability(label). This process is implemented in the function ```def mi_face```.
-#### Functions
-```def mi_face```
-- Input: 
-  - ```label_index```: the (index of) the label of the clas we want to reconstruct
-  - ```num_iterations```: number of interations we try to minimize the 1-probability(label)
-  - ```gradient_step```: the gradient step, metric of the gradient decent algrothim (x - gradient_step * x.gradient)
-- Output: reconstructed image in the form of a 112 * 92 tensor, just like the models input dim.
-
-```main```
-- see code comments for details
+Contents:
+ * 'data_pgm', folder with the ATnT face dataset containing 40 classes, each with 10 different images of the same person.
+ * 'atnt-mlp-model.pt', trained target model.
+ * 'results', folder with results for 5, 10, and 100 iterations of mi_face algorithm.
+ * 'target_model.py', the target model we are using.
+ * 'model_inversion.py' our implementation of mi_face algorithm and some functions to perform the attack with the target model we are using.
 
 ### target_model.py
-
-#### Model
 Our target model is a simple MLP based on the PyTorch Tutorial form lecture and https://github.com/bentrevett/pytorch-image-classification/blob/master/1_mlp.ipynb
 
-```class MLP``` (Simple MLP)
-- Input layer dim: 112 * 92
-- Hidden layer dim: 3000 (sigmoid)
-- Output layer dim: 40
+### model_inversion.py
+We perform a model inversion attack similar to Fredrikson et al. More concrete we perform an reconstruction attack, where given a label we reconstruct an image of the respective class.
+This file contains our implementation of mi_face algorithm from Fredrikson et al. We perform a simple gradient descent, where we query the model with a random image, and the try to minimize 1-probability(label).
 
-#### Functions
-```def calculate_accuracy```
-- function to calculate the accuracy
+### How to run:
+##### To train the target model and get the resulting atnt-mlp-model.pt:
+`$ python target_model.py`
 
-```def train```
-- function to train the model
+##### To perform the model inversion attack:
+`$ python model_inversions.py`
 
-```def evaluate```
-- function to evaluate the model
+optional arguments:
+  `-h`, `--help`           show this help message and exit
+  `--modelPath MODEL default=atnt-mlp-model.pt`         target model file
+  `--iterations NUM_ITERATIONS default=10`              number of iterations mi_face should perform
 
-```main```
-- see code comments for details
 
 
 
