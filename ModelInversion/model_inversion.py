@@ -45,14 +45,12 @@ def mi_face(label_index, num_iterations, gradient_step):
 
         with torch.no_grad():
             # apply gradient descent
-            # tensor = torch.clamp(tensor - gradient_step * tensor.grad, 0, 255)
             tensor = (tensor - gradient_step * tensor.grad)
 
         # set image = tensor only if the new loss is the min from all iterations
         if loss < min_loss:
             min_loss = loss
             image = tensor
-        print(min_loss)
 
     return image
 
@@ -85,12 +83,12 @@ if __name__ == '__main__':
         for j in range(10):
             # get random validation set image from respective class
             count += 1
-            print('Class ' + str(count))
+            print('Reconstructing Class ' + str(count))
 
             ran = random.randint(1, 2)
             path = 'data_pgm/faces/s0' + str(count) + '/' + str(
                 ran) + '.pgm' if count < 10 else 'data_pgm/faces/s' + str(count) + '/' + str(ran) + '.pgm'
-                
+
             with open(path, 'rb') as f:
                 original = plt.imread(f)
 
