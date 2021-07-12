@@ -57,12 +57,14 @@ class TargetNet(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=input_dim, out_channels=hidden_layers[0], kernel_size=3, padding=1),
             nn.BatchNorm2d(hidden_layers[0]),
+            # nn.Dropout(p=0.5),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels=hidden_layers[0], out_channels=hidden_layers[1], kernel_size=3, padding=1),
             nn.BatchNorm2d(hidden_layers[1]),
+            # nn.Dropout(p=0.5),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
@@ -90,12 +92,14 @@ class ShadowNet(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=input_dim, out_channels=hidden_layers[0], kernel_size=3, padding=1),
             nn.BatchNorm2d(hidden_layers[0]),
+            # nn.Dropout(p=0.5),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels=hidden_layers[0], out_channels=hidden_layers[1], kernel_size=3, padding=1),
             nn.BatchNorm2d(hidden_layers[1]),
+            # nn.Dropout(p=0.5),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
@@ -152,12 +156,14 @@ class MNISTNet(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=input_dim, out_channels=n_hidden, kernel_size=5),
             nn.BatchNorm2d(n_hidden),
+            # nn.Dropout(p=0.5),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels=n_hidden, out_channels=n_hidden*2, kernel_size=5),
             nn.BatchNorm2d(n_hidden*2),
+            # nn.Dropout(p=0.5),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )

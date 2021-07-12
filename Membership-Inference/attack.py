@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 
 #set the seed for reproducibility
 np.random.seed(1234)
+#Flag to enable early stopping
+need_earlystop = False
 
 ########################
 # Model Hyperparameters
@@ -55,8 +57,8 @@ n_hidden_mnist = 32
 ################################
 #Attack Model Hyperparameters
 ################################
-NUM_EPOCHS = 15
-BATCH_SIZE = 20
+NUM_EPOCHS = 20
+BATCH_SIZE = 10
 #Learning rate
 LR_ATTACK = 0.001 
 #L2 Regulariser
@@ -444,7 +446,9 @@ def create_attack(args):
                                     verbose,
                                     num_epochs,
                                     top_k,
+                                    need_earlystop,
                                     is_target=True)
+
     else: #Target model training not required, load the saved checkpoint
         target_file = os.path.join(modelDir,'best_target_model.ckpt')
         print('Use Target model at the path ====> [{}] '.format(modelDir))
@@ -500,6 +504,7 @@ def create_attack(args):
                                     verbose,
                                     num_epochs,
                                     top_k,
+                                    need_earlystop,
                                     is_target=False)
     else: #Shadow model training not required, load the saved checkpoint
         print('Using Shadow model at the path  ====> [{}] '.format(modelDir))
