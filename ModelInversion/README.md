@@ -1,5 +1,19 @@
 ## Model Inverison
 
+### How to run:
+
+$ python model_inversions.py --help --> To see all the possible argument options
+
+usage: Membership Inference Attack [-h]
+                                   [--modelPath MODELPATH]
+                                   [--iterations ITERATIONS]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --modelPath           path of the targert model, default: Our Target Model
+  --iterations          number of iterations mi_face should perform
+
+
 ### Data
 We are using a dataset called 'Atnt Dataset of Faces'. It has 1 channel images of 40 different persons, 10 different images for each person. The images have a dimension of 112 * 92 pixels.
 
@@ -18,7 +32,6 @@ To do so we perform a simple gradient descent. We query the model with a random 
 - see code comments for details
 
 ### target_model.py
-
 
 #### Model
 Our target model is a simple MLP based on the PyTorch Tutorial form lecture and https://github.com/bentrevett/pytorch-image-classification/blob/master/1_mlp.ipynb
