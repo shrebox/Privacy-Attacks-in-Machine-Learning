@@ -9,6 +9,7 @@ import os
 def prepare_attack_data(model,
                         iterator,
                         device,
+                        top_k=False,
                         test_dataset=False):
     
     attackX = []
@@ -16,25 +17,29 @@ def prepare_attack_data(model,
     
     model.eval()
     with torch.no_grad():
-        for inputs, labels in iterator:
+        for inputs, _ in iterator:
             # Move tensors to the configured device
             inputs = inputs.to(device)
-            labels = labels.to(device)
             
             #Forward pass through the model
             outputs = model(inputs)
             
             #To get class probabilities
-            probs_train = F.softmax(outputs, dim=1)
-            
-            #Top 3 posterior probabilities(high to low) for train samples
-            topk_probs, _ = torch.topk(probs_train, 3, dim=1)
-            #attackX.append(topk_probs.cpu())
-            attackX.append(probs_train.cpu())
-            if test_dataset:
-                attackY.append(torch.zeros(probs_train.size(0),dtype=torch.long))
+            posteriors = F.softmax(outputs, dim=1)
+            if top_k:
+                #Top 3 posterior probabilities(high to low) for train samples
+                topk_probs, _ = torch.topk(posteriors, 3, dim=1)
+                attackX.append(topk_probs.cpu())
             else:
-                attackY.append(torch.ones(probs_train.size(0), dtype=torch.long))
+                attackX.append(posteriors.cpu())
+
+            #This function was initially designed to calculate posterior for training loader,
+            # but to handle the scenario when trained model is given to us, we added this boolean
+            # to different if the dataset passed is training or test and assign labels accordingly    
+            if test_dataset:
+                attackY.append(torch.zeros(posteriors.size(0),dtype=torch.long))
+            else:
+                attackY.append(torch.ones(posteriors.size(0), dtype=torch.long))
         
     return attackX, attackY
     
@@ -133,6 +138,7 @@ def train_attack_model(model,
                     model_path='./model',
                     epochs=10,
                     b_size=20,
+                    num_workers=1,
                     verbose=False):
         
     n_validation = 1000 # number of validation samples
@@ -169,11 +175,13 @@ def train_attack_model(model,
 
     train_loader = torch.utils.data.DataLoader(dataset=train_data,
                                                 batch_size=b_size,
-                                                shuffle=True)
+                                                shuffle=True,
+                                                num_workers=num_workers)
         
     val_loader = torch.utils.data.DataLoader(dataset=val_data,
                                                   batch_size=b_size,
-                                                  shuffle=False)
+                                                  shuffle=False,
+                                                  num_workers=num_workers)
     
     
     print('----Attack Model Training------')   
@@ -224,6 +232,7 @@ def train_model(model,
                 model_path,
                 verbose=False,
                 num_epochs=50,
+                top_k=False,
                 is_target=False):
     
     best_valacc = 0
@@ -275,10 +284,10 @@ def train_model(model,
     
     
     if is_target:
-        print('*****Target model training finished******')
+        print('----Target model training finished----')
         print('Validation Accuracy for the Target Model is: {:.2f} %'.format(100* best_valacc))
     else:
-        print('*****Shadow model training finished******')
+        print('----Shadow model training finished-----')
         print('Validation Accuracy for the Shadow Model is: {:.2f} %'.format(100* best_valacc))
 
     if is_target:
@@ -290,7 +299,7 @@ def train_model(model,
     
     #As the model is fully trained, time to prepare data for attack model.
     #Training Data for members would come from shadow train dataset, and member inference from target train dataset respectively.
-    attack_X, attack_Y = prepare_attack_data(model,train_loader,device)
+    attack_X, attack_Y = prepare_attack_data(model,train_loader,device,top_k)
     
     # In test phase, we don't need to compute gradients (for memory efficiency)
     print('----Test the Trained Network----')
@@ -309,13 +318,14 @@ def train_model(model,
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
             
-            # Attack data 
             # Posterior and labels for non-members
             probs_test = F.softmax(test_outputs, dim=1)
-            #Take top 3 posteriors ranked high ---> low
-            #topk_t_probs, _ = torch.topk(probs_test, 3, dim=1)
-            #attack_X.append(topk_t_probs.cpu())
-            attack_X.append(probs_test.cpu())
+            if top_k:
+                #Take top K posteriors ranked high ---> low
+                topk_t_probs, _ = torch.topk(probs_test, 3, dim=1)
+                attack_X.append(topk_t_probs.cpu())
+            else:
+                attack_X.append(probs_test.cpu())
             attack_Y.append(torch.zeros(probs_test.size(0), dtype=torch.long))
 
         if is_target:
