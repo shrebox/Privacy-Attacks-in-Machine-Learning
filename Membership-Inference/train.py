@@ -139,7 +139,8 @@ def train_attack_model(model,
                     epochs=10,
                     b_size=20,
                     num_workers=1,
-                    verbose=False):
+                    verbose=False,
+                    earlystopping=False):
         
     n_validation = 1000 # number of validation samples
     best_valacc = 0
@@ -199,21 +200,26 @@ def train_attack_model(model,
         print ('Epoch [{}/{}], Train Loss: {:.3f} | Train Acc: {:.2f}% | Val Loss: {:.3f} | Val Acc: {:.2f}%'
                  .format(i+1, epochs, train_loss, train_acc*100, valid_loss, valid_acc*100))
 
-        if best_valacc<=valid_acc:
+        if earlystopping: 
+            if best_valacc<=valid_acc:
+                print('Saving model checkpoint')
+                best_valacc = valid_acc
+                #Store best model weights
+                best_model = copy.deepcopy(model.state_dict())
+                torch.save(best_model, path)
+                stop_count = 0
+            else:
+                stop_count+=1
+                if stop_count >=patience: #early stopping check
+                    print('End Training after [{}] Epochs'.format(epochs+1))
+                    break
+        else:#Continue model training for all epochs
             print('Saving model checkpoint')
             best_valacc = valid_acc
             #Store best model weights
             best_model = copy.deepcopy(model.state_dict())
             torch.save(best_model, path)
-            stop_count = 0
-        else:
-            stop_count+=1
-            if stop_count >=patience: #early stopping check
-                print('End Training after [{}] Epochs'.format(epochs+1))
-                break
-        
-        
-        
+            
     return best_valacc
     
 
@@ -233,6 +239,7 @@ def train_model(model,
                 verbose=False,
                 num_epochs=50,
                 top_k=False,
+                earlystopping=False,
                 is_target=False):
     
     best_valacc = 0
@@ -265,8 +272,23 @@ def train_model(model,
         print ('Epoch [{}/{}], Train Loss: {:.3f} | Train Acc: {:.2f}% | Val Loss: {:.3f} | Val Acc: {:.2f}%'
                    .format(epoch+1, num_epochs, train_loss, train_acc*100, valid_loss, valid_acc*100))
         
-        
-        if best_valacc<=valid_acc:
+        if earlystopping:
+            if best_valacc<=valid_acc:
+                print('Saving model checkpoint')
+                best_valacc = valid_acc
+                #Store best model weights
+                best_model = copy.deepcopy(model.state_dict())
+                if is_target:
+                    torch.save(best_model, target_path)
+                else:
+                    torch.save(best_model, shadow_path)
+                stop_count = 0
+            else:
+                stop_count+=1
+                if stop_count >=patience: #early stopping check
+                    print('End Training after [{}] Epochs'.format(epoch+1))
+                    break
+        else:#Continue model training for all epochs
             print('Saving model checkpoint')
             best_valacc = valid_acc
             #Store best model weights
@@ -275,12 +297,6 @@ def train_model(model,
                 torch.save(best_model, target_path)
             else:
                 torch.save(best_model, shadow_path)
-            stop_count = 0
-        else:
-            stop_count+=1
-            if stop_count >=patience: #early stopping check
-                print('End Training after [{}] Epochs'.format(epoch+1))
-                break
     
     
     if is_target:
