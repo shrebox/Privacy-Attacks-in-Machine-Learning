@@ -80,7 +80,7 @@ if __name__ == '__main__':
             # get random validation set image from respective class
             count += 1
             print('Class ' + str(count))
-            ran = random.randint(1, 2)
+            ran = random.randint(1, 3)
             path = 'data_pgm/faces/s0' + str(count) + '/' + str(ran) + '.pgm' if count < 10 else 'data_pgm/faces/s' + str(count) + '/' + str(ran) + '.pgm'
             with open(path, 'rb') as f:
                 original = plt.imread(f)
