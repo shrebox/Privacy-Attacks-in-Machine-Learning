@@ -24,7 +24,7 @@
 
 * Folder is created if not created already; will be created in the same directory from where the code is run.
 
-* './model/{MNIST, CIFAR10}/{best_shadow_model.ckpt, best_target_model.ckpt, best_attack_model.ckpt}/' are the best models stored after the complete run.
+* '/model/{MNIST, CIFAR10}/{best_shadow_model.ckpt, best_target_model.ckpt, best_attack_model.ckpt}/' are the best models stored after the complete run.
 
 ### Files: 
 
@@ -32,29 +32,32 @@
     2. 'model.py' 
     3. 'train.py'
 
->> Have to edit the details of which file consists of train, test, evaluation ??
+* 'attack.py' is the main file that initiates the memebership inference attack.
 
-* 'attack.py' is the main file to run the code with arguments. It contains all the runner functions 
+* 'model.py' consists target, shadow and attack model architectures.
 
-* 'model.py' consists of the model classes used to model the target, shadow and attack models.
+* 'train.py' contains methods for model training and evaluation.
 
-* 'train.py' is used to train and test the models.
+* NOTE: Please put all the above three files in the same folder.
 
 ### How to run:
 
-* Code tested on Google Colab. Please use runtime type as 'GPU'.
+* NOTE: Code tested on Google Colab with runtime type as 'GPU'. 
 
-* To run the code with training enabled (for the first timers):
+* Requirements: Python 3.7.10, Pytroch 1.9.0+cu102
+---------------------------------------------------------------------------------
+
+* With target and shadow model training enabled (for the first timers):
 ```
 $ python attack.py --trainTargetModel --trainShadowModel --dataset CIFAR10
 ```
 
-* To run the code with training enabled and top 3 posteriors for training the attack model:
+* With target and shadow model training enabled and using top 3 posteriors for training the attack model:
 ```
 $ python attack.py --trainTargetModel --trainShadowModel --dataset MNIST --need_topk
 ```
 
-* To run the code with pre-trained model from the previous runs:
+* With pre-trained target and shadow models stored in the 'model' folder:
 ```
 $ python attack.py --dataset CIFAR10
 ```
