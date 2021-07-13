@@ -13,8 +13,8 @@
 
 ### Folders:  
 
-1. '/model/{MNIST, CIFAR10}' 
-2. '/data/{MNIST, CIFAR10}' 
+    1. '/model/{MNIST, CIFAR10}' 
+    2. '/data/{MNIST, CIFAR10}' 
 
 * We are using the datasets from PyTorch library - MNIST and CIFAR10. 
 
@@ -28,9 +28,9 @@
 
 ### Files: 
 
-1. 'attack.py' --> Main file to be run with arguments
-2. 'model.py' --> Containing model definitions for target, shadow and attack models
-3. 'train.py' --> Train 
+    1. 'attack.py'
+    2. 'model.py' 
+    3. 'train.py'
 
 >> Have to edit the details of which file consists of train, test, evaluation ??
 
@@ -61,7 +61,7 @@ $ python attack.py --dataset CIFAR10
 
 * Details about all the arguments can be found using the following command:
 ```
-$ attack.py --help 
+$ python attack.py --help 
 ```
     usage: Membership Inference Attack [-h] [--dataset {CIFAR10,MNIST}]
                                        [--dataPath DATAPATH]
