@@ -19,7 +19,7 @@ This file contains our implementation of mi_face algorithm from Fredrikson et al
 `$ python target_model.py`
 
 ##### To perform the model inversion attack:
-`$ python model_inversions.py`
+`$ python model_inversion.py`
 
 optional arguments:
 
