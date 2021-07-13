@@ -8,25 +8,26 @@
 
 * We assume that we know the data distribution on which the target model is trained is same on which our shadow model is trained. Also, we know the architecture and hyperparameters of the target model which we can use to train out shadow model.
 
+* We are using the datasets from PyTorch library - MNIST and CIFAR10. 
 
 ## Implemention
 
-### Folders:  
+### Folder structure:  
 
     1. '/model/{MNIST, CIFAR10}' 
     2. '/data/{MNIST, CIFAR10}' 
 
-* We are using the datasets from PyTorch library - MNIST and CIFAR10. 
+* Both 'data' and 'model' folder and sub-folders are created automatically if not present; will be created in the same directory from where the code is run.
 
-* Code uses 'model' folder to save model checkpoints and 'data' folder to save the data.
+* 'model' folder saves model checkpoints and 'data' folder saves the dataset (in the respective sub-folders).
 
-* If data is not present in the 'data' folder, it will be downloaded automatically.
+* Best model checkpoints 'best_shadow_model.ckpt', 'best_target_model.ckpt', and 'best_attack_model.ckpt' are stored in the 'model' folder (as specified above) during the run. 
 
-* Folder is created if not created already; will be created in the same directory from where the code is run.
-
-* '/model/{MNIST, CIFAR10}/{best_shadow_model.ckpt, best_target_model.ckpt, best_attack_model.ckpt}/' are the best models stored after the complete run.
+* NOTE: To find the best models saved from our run, check 'best_models' folder.
 
 ### Files: 
+
+* The following files are present in 'Membership-Inference' folder:
 
     1. 'attack.py'
     2. 'model.py' 
@@ -38,13 +39,15 @@
 
 * 'train.py' contains methods for model training and evaluation.
 
-* NOTE: Please put all the above three files in the same folder.
+* NOTE: Please keep all the above three files in the same folder at the time of execution.
 
 ### How to run:
 
 * NOTE: Code tested on Google Colab with runtime type as 'GPU'. 
 
 * Requirements: Python 3.7.10, Pytroch 1.9.0+cu102
+
+* Please refrain from using the arguments not specified in the commands below.
 ---------------------------------------------------------------------------------
 
 * With target and shadow model training enabled (for the first timers):
