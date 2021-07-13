@@ -55,7 +55,7 @@ def mi_face(label_index, num_iterations, gradient_step):
         # set image = tensor only if the new loss is the min from all iterations
         if loss < min_loss:
             min_loss = loss
-            image = tensor
+            image = tensor.detach().clone()
 
     return image
 
