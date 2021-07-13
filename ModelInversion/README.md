@@ -29,6 +29,10 @@ optional arguments:
   
   `--iterations NUM_ITERATIONS default=10`              number of iterations mi_face should perform
 
+  `--lossFunction LOSS_FUNCTION default=crossEntropy`  choose between crossEntropy and softmax as loss function 
+
+  `--numberOfResults NUM_RESULTS default=one` choose between reconstructing one or all pictures
+
 
 
 
