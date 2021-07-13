@@ -46,6 +46,7 @@ def mi_face(label_index, num_iterations, gradient_step):
         #soft_pred = nn.functional.softmax(pred, 1)
         #loss = soft_pred.squeeze()[label_index]
 
+        print('Loss: ' + str(loss.item()))
         loss.backward()
 
         with torch.no_grad():
