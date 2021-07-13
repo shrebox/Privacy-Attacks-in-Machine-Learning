@@ -39,12 +39,14 @@ def mi_face(label_index, num_iterations, gradient_step):
         pred, _ = model(tensor)
 
         # calculate the loss and gardient for the class we want to reconstruct
-        ### use this
-        crit = nn.CrossEntropyLoss()
-        loss = crit(pred, torch.tensor([label_index]))
-        ### or this
-        #soft_pred = nn.functional.softmax(pred, 1)
-        #loss = soft_pred.squeeze()[label_index]
+        if args.lossFunction == "crossEntropy":
+            # use this
+            crit = nn.CrossEntropyLoss()
+            loss = crit(pred, torch.tensor([label_index]))
+        else:
+            # or this
+            soft_pred = nn.functional.softmax(pred, 1)
+            loss = soft_pred.squeeze()[label_index]
 
         print('Loss: ' + str(loss.item()))
         loss.backward()
@@ -58,13 +60,15 @@ def mi_face(label_index, num_iterations, gradient_step):
             min_loss = loss
             image = tensor.detach().clone()
 
-    return image
+        return image
 
 
 def get_cmd_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataSetPath', default='atnt-mlp-model.pt', type=str, help='')
+    parser.add_argument('--modelPath', default='atnt-mlp-model.pt', type=str, help='')
     parser.add_argument('--iterations', default='10', type=int, help='Number of Iterations')
+    parser.add_argument('--lossFunction', default="crossEntropy", type=str, choices=['crossEntropy', 'softmax'], help='which loss function to use crossEntropy or softmax')
+    parser.add_argument('--numberOfResults', default='one', type=str, choices=['one', 'all'], help='chose how many results between one and all')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -73,43 +77,82 @@ if __name__ == '__main__':
     print(args)
 
     # load the model and set it to eval mode
-    model = torch.load(args.dataSetPath)
+    model = torch.load(args.modelPath)
     model.eval()
 
     # set params
     gradient_step_size = 0.1
 
-    # create figure
-    fig, axs = plt.subplots(8, 10)
-    fig.set_size_inches(20, 20)
+    # Print only one picture
+    if args.numberOfResults == 'one':
+        # create figure
+        #fig, axs = plt.subplots(2,2)
+        #fig.set_size_inches(8, 4)
 
-    random.seed(7)
-    count = 0
-    for i in range(0, 8, 2):
-        for j in range(10):
-            # get random validation set image from respective class
-            count += 1
-            print('Reconstructing Class ' + str(count))
+        fig, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, sharey=True)
+        reconstruction = mi_face(0, args.iterations, gradient_step_size)
+        ran = random.randint(1, 2)
+        path = 'data_pgm/faces/s0' + str(1) + '/' + str(
+                     ran) + '.pgm' if 0 < 10 else 'data_pgm/faces/s' + str(0) + '/' + str(ran) + '.pgm'
 
-            ran = random.randint(1, 2)
-            path = 'data_pgm/faces/s0' + str(count) + '/' + str(
-                ran) + '.pgm' if count < 10 else 'data_pgm/faces/s' + str(count) + '/' + str(ran) + '.pgm'
+        with open(path, 'rb') as f:
+            original = plt.imread(f)
+        # add both images to the plot
+        ax1.imshow(original, cmap='gray')
+        ax1.set_title('original')
+        ax1.axis('off')
+        ax2.imshow(reconstruction.squeeze().detach().numpy(), cmap='gray')
+        ax2.set_title('reconstructed')
+        ax2.axis('off')
 
-            with open(path, 'rb') as f:
-                original = plt.imread(f)
+       # axs[0,0].imshow(original, cmap='gray')
+        #axs[0,0].set_title('original')
+        #axs[0,1].imshow(reconstruction.squeeze().detach().numpy(), cmap='gray')
+        #axs[0,1].set_title('reconstructed')
+        #axs[0,0].axis('off')
+        #axs[1,1].axis('off')
+        #axs[1, 0].axis('off')
+       # axs[0, 1].axis('off')
 
-            # reconstruct respective class
-            reconstruction = mi_face(count - 1, args.iterations, gradient_step_size)
+        # plot reconstructed image
+        fig.suptitle('Images reconstructed with\n ' + str(
+            args.iterations) + ' iterations of mi_face. ', fontsize=15)
+        fig.savefig('results/results_' + str(args.iterations) + '.png', dpi=100)
+        plt.show()
+    else:
+        # print all pictures
+        # create figure
+        fig, axs = plt.subplots(8, 10)
+        fig.set_size_inches(20, 20)
 
-            # add both images to the plot
-            axs[i, j].imshow(original, cmap='gray')
-            axs[i + 1, j].imshow(reconstruction.squeeze().detach().numpy(), cmap='gray')
-            axs[i, j].axis('off')
-            axs[i + 1, j].axis('off')
+        random.seed(7)
+        count = 0
+        for i in range(0, 8, 2):
+            for j in range(10):
+                # get random validation set image from respective class
+                count += 1
+                print('Reconstructing Class ' + str(count))
 
-    # plot reconstructed image
-    fig.suptitle('Images reconstructed with ' + str(
-        args.iterations) + ' interations of mi_face. Find the reconstruction below the respective original.', fontsize=20)
-    fig.savefig('results/results_' + str(args.iterations) + '.png', dpi=100)
-    plt.show()
+                ran = random.randint(1, 2)
+                path = 'data_pgm/faces/s0' + str(count) + '/' + str(
+                    ran) + '.pgm' if count < 10 else 'data_pgm/faces/s' + str(count) + '/' + str(ran) + '.pgm'
+
+                with open(path, 'rb') as f:
+                    original = plt.imread(f)
+
+                # reconstruct respective class
+                reconstruction = mi_face(count - 1, args.iterations, gradient_step_size)
+
+
+                # add both images to the plot
+                axs[i, j].imshow(original, cmap='gray')
+                axs[i + 1, j].imshow(reconstruction.squeeze().detach().numpy(), cmap='gray')
+                axs[i, j].axis('off')
+                axs[i + 1, j].axis('off')
+
+        # plot reconstructed image
+        fig.suptitle('Images reconstructed with ' + str(
+            args.iterations) + ' iterations of mi_face. Find the reconstruction below the respective original.', fontsize=20)
+        fig.savefig('results/results_' + str(args.iterations) + '.png', dpi=100)
+        plt.show()
 
