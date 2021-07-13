@@ -60,7 +60,7 @@ def mi_face(label_index, num_iterations, gradient_step):
             min_loss = loss
             image = tensor.detach().clone()
 
-        return image
+    return image
 
 
 def get_cmd_arguments():
