@@ -86,9 +86,6 @@ if __name__ == '__main__':
     # Print only one picture
     if args.numberOfResults == 'one':
         # create figure
-        #fig, axs = plt.subplots(2,2)
-        #fig.set_size_inches(8, 4)
-
         fig, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, sharey=True)
         reconstruction = mi_face(0, args.iterations, gradient_step_size)
         ran = random.randint(1, 2)
@@ -105,15 +102,6 @@ if __name__ == '__main__':
         ax2.set_title('reconstructed')
         ax2.axis('off')
 
-       # axs[0,0].imshow(original, cmap='gray')
-        #axs[0,0].set_title('original')
-        #axs[0,1].imshow(reconstruction.squeeze().detach().numpy(), cmap='gray')
-        #axs[0,1].set_title('reconstructed')
-        #axs[0,0].axis('off')
-        #axs[1,1].axis('off')
-        #axs[1, 0].axis('off')
-       # axs[0, 1].axis('off')
-
         # plot reconstructed image
         fig.suptitle('Images reconstructed with\n ' + str(
             args.iterations) + ' iterations of mi_face. ', fontsize=15)
@@ -123,8 +111,7 @@ if __name__ == '__main__':
         # print all pictures
         # create figure
         fig, axs = plt.subplots(8, 10)
-        fig.set_size_inches(20, 20)
-
+        fig.set_size_inches(20, 24)
         random.seed(7)
         count = 0
         for i in range(0, 8, 2):
