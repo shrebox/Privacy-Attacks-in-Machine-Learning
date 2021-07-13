@@ -22,6 +22,7 @@ This file contains our implementation of mi_face algorithm from Fredrikson et al
 `$ python model_inversions.py`
 
 optional arguments:
+
   `-h`, `--help`           show this help message and exit
   
   `--modelPath MODEL default=atnt-mlp-model.pt`         target model file
