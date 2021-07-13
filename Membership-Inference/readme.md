@@ -90,6 +90,7 @@ optional arguments:
 ## References:
 
 1. Salem, A., Zhang, Y., Humbert, M., Berrang, P., Fritz, M. and Backes, M., 2018. Ml-leaks: Model and data independent membership inference attacks and defenses on machine learning models. arXiv preprint arXiv:1806.01246.
-2. https://github.com/AhmedSalem2/ML-Leaks
-3. https://github.com/Lab41/cyphercat
+2. Shokri, R., Stronati, M., Song, C. and Shmatikov, V., 2017, May. Membership inference attacks against machine learning models. In 2017 IEEE Symposium on Security and Privacy (SP) (pp. 3-18). IEEE.
+3. https://github.com/AhmedSalem2/ML-Leaks
+4. https://github.com/Lab41/cyphercat
 
