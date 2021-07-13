@@ -23,7 +23,9 @@ This file contains our implementation of mi_face algorithm from Fredrikson et al
 
 optional arguments:
   `-h`, `--help`           show this help message and exit
+  
   `--modelPath MODEL default=atnt-mlp-model.pt`         target model file
+  
   `--iterations NUM_ITERATIONS default=10`              number of iterations mi_face should perform
 
 
