@@ -33,6 +33,6 @@ optional arguments:
 
   `--numberOfResults NUM_RESULTS default=one` choose between reconstructing one or all pictures
 
-
+* Code tested on Google Colab. Please use 'CPU' as the runtime type. 
 
 
