@@ -14,7 +14,7 @@
 ### Folders:  
 
 1. '/model/{MNIST, CIFAR10}' 
-2/ '/data/{MNIST, CIFAR10}' 
+2. '/data/{MNIST, CIFAR10}' 
 
 * We are using the datasets from PyTorch library - MNIST and CIFAR10. 
 
