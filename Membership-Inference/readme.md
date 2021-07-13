@@ -63,29 +63,29 @@ $ python attack.py --dataset CIFAR10
 ```
 $ attack.py --help 
 ```
-usage: Membership Inference Attack [-h] [--dataset {CIFAR10,MNIST}]
-                                   [--dataPath DATAPATH]
-                                   [--modelPath MODELPATH]
-                                   [--trainTargetModel] [--trainShadowModel]
-                                   [--need_augm] [--need_topk] [--param_init]
-                                   [--verbose]
+    usage: Membership Inference Attack [-h] [--dataset {CIFAR10,MNIST}]
+                                       [--dataPath DATAPATH]
+                                       [--modelPath MODELPATH]
+                                       [--trainTargetModel] [--trainShadowModel]
+                                       [--need_augm] [--need_topk] [--param_init]
+                                       [--verbose]
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --dataset {CIFAR10,MNIST}
-                        Which dataset to use (CIFAR10 or MNIST)
-  --dataPath DATAPATH   Path to store data
-  --modelPath MODELPATH
-                        Path to save or load model checkpoints
-  --trainTargetModel    Train a target model, if false then load an already
-                        trained model
-  --trainShadowModel    Train a shadow model, if false then load an already
-                        trained model
-  --need_augm           To use data augmentation on target and shadow training
-                        set or not
-  --need_topk           Flag to enable using Top 3 posteriors for attack data
-  --param_init          Flag to enable custom model params initialization
-  --verbose             Add Verbosity
+    optional arguments:
+      -h, --help            show this help message and exit
+      --dataset {CIFAR10,MNIST}
+                            Which dataset to use (CIFAR10 or MNIST)
+      --dataPath DATAPATH   Path to store data
+      --modelPath MODELPATH
+                            Path to save or load model checkpoints
+      --trainTargetModel    Train a target model, if false then load an already
+                            trained model
+      --trainShadowModel    Train a shadow model, if false then load an already
+                            trained model
+      --need_augm           To use data augmentation on target and shadow training
+                            set or not
+      --need_topk           Flag to enable using Top 3 posteriors for attack data
+      --param_init          Flag to enable custom model params initialization
+      --verbose             Add Verbosity
 
 ## References:
 
