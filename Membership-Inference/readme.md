@@ -42,7 +42,7 @@
 
 ### How to run:
 
-* Code tested on Google Colab with GPU.
+* Code tested on Google Colab. Please use runtime type as 'GPU'.
 
 * To run the code with training enabled (for the first timers):
 ```
