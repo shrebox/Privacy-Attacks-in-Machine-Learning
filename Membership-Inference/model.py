@@ -70,7 +70,6 @@ class TargetNet(nn.Module):
         )
         
         features = calc_feat_linear_cifar(size)
-        print('In Features for FC layer in Target Model is : {}'.format( features**2 * hidden_layers[1]))
         self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear((features**2 * hidden_layers[1]), hidden_layers[2]),
@@ -105,7 +104,6 @@ class ShadowNet(nn.Module):
         )
         
         features = calc_feat_linear_cifar(size)
-        print('In Features for FC layer in Shadow Model is : {}'.format( features**2 * hidden_layers[1]))
         self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear((features**2 * hidden_layers[1]), hidden_layers[2]),
@@ -169,7 +167,6 @@ class MNISTNet(nn.Module):
         )
         
         features = calc_feat_linear_mnist(size)
-        print('In Features for FC layer in Shadow Model is : {}'.format(features**2 * (n_hidden*2)))
         self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear(features**2 * (n_hidden*2), n_hidden*2),

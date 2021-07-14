@@ -1,73 +1,77 @@
-# Membership Inference
+## Overview
 
-* We have implemented the Membership Inference (Attack 1) from ML Leaks [1] where the task is to classify whether a sample belongs to traning set of the model (target) we are attacking (using the attack model). 
+This is the implementation of Membership Inference Attack (Adversay 1) from ML Leaks [1] paper. In this setting, the attacker/ adversary aims to determine whether a data sample is used to train a ML model(aka target model) or not. In the implementation we have assumed the adversary knows the training data distribution of the target model as well as its architecture and hyperparameters used to train the model.  
 
-* Attack model is a binary classifer to detect whether an input is used in the training set of the target model. Shadow model is used to mimic the target model and used to train the attack model using the posteriros. Check ML-Leaks - Section III (Adversary 1) [1] for more details.
+## Dataset
+CIFAR10, MNIST from Pytorch dataset library
 
-* Target model and shadow models are CNN based architectures with two convolution layers followed by batch normalization and max-pooling and one fully connected layer. We use ReLU activation for non-linearity. Attack model is an MLP with one hidden layer and ReLU activation for non-linearity.
+## Requirements
+We tested the code on Google Colab with 'GPU' backend. The below versions of Python and Pytorch were selected by default. 
 
-* We assume that we know the data distribution on which the target model is trained is same on which our shadow model is trained. Also, we know the architecture and hyperparameters of the target model which we can use to train out shadow model.
+Python 3.7.10
+Pytroch 1.9.0
 
-* We are using the datasets from PyTorch library - MNIST and CIFAR10. 
+We have not tested our code with Python version 2.7. The code should work with Python version 3.7.10 and above. We also recommend to use latest stable release (1.9.0) of Pytorch to avoid any errors during execution.
 
-## Implemention
 
-### Folder structure:  
+## File structure:  
 
-    1. '/model/{MNIST, CIFAR10}' 
-    2. '/data/{MNIST, CIFAR10}' 
+    Membership-Inferfernece
+     |- attack.py (main file that initiates the memebership inference attack)
+     |- model.py  (target, shadow and attack model architectures)
+     |- train.py  (model training and evaluation)
+     |- README.md
 
-* Both 'data' and 'model' folder and sub-folders are created automatically if not present; will be created in the same directory from where the code is run.
+## Data and Model Folders
+  
+   model (for model checkpoints)
+     |- CIFAR10
+     |- MNIST
 
-* 'model' folder saves model checkpoints and 'data' folder saves the dataset (in the respective sub-folders).
+   data (dataset)
+     |- CIFAR10
+     |- MNIST
 
-* Best model checkpoints 'best_shadow_model.ckpt', 'best_target_model.ckpt', and 'best_attack_model.ckpt' are stored in the 'model' folder (as specified above) during the run. 
+* The two main folders and sub folders are created automatically, if not present, in the working directory from the where the code is run. User can specify explicit data and model path using the command line arguments '--dataPath' and '--modelPath'. In this case the sub-folders for respective datasets will then be created during the execution.
 
-* NOTE: To find the best models saved from our run, check 'best_models' folder.
+* The model checkpoints during training are saved in the respective folder the dataset. 
+e.g : /model/CIFAR10 (default path)
 
-### Files: 
+* Each dataset is downloaded automatically by Pytorch(if not present) in the respective dataset folder.
+e.g: /data/CIFAR10 (default path)
 
-* The following files are present in 'Membership-Inference' folder:
+* The best model checkpoints are named as 'best_shadow_model.ckpt', 'best_target_model.ckpt', and 'best_attack_model.ckpt' respectively.
 
-    1. 'attack.py'
-    2. 'model.py' 
-    3. 'train.py'
+NOTE: We have provided the best models from our test run. They are in the 'best_models' folder in the main code repository.
 
-* 'attack.py' is the main file that initiates the memebership inference attack.
 
-* 'model.py' consists target, shadow and attack model architectures.
+## Run Experiements:
 
-* 'train.py' contains methods for model training and evaluation.
+NOTE : 1) Keep all the code (.py) files in the same folder before starting the execution.
+       2) For phase 1 evluation, kindly run the commands as provided.
 
-* NOTE: Please keep all the above three files in the same folder at the time of execution.
-
-### How to run:
-
-* NOTE: Code tested on Google Colab with runtime type as 'GPU'. 
-
-* Requirements: Python 3.7.10, Pytroch 1.9.0+cu102
-
-* Please refrain from using the arguments not specified in the commands below.
----------------------------------------------------------------------------------
-
-* With target and shadow model training enabled (for the first timers):
+* Membership inference attack with target and shadow model training enabled:
 ```
-$ python attack.py --trainTargetModel --trainShadowModel --dataset CIFAR10
-```
-
-* With target and shadow model training enabled and using top 3 posteriors for training the attack model:
-```
-$ python attack.py --trainTargetModel --trainShadowModel --dataset MNIST --need_topk
+  python attack.py --dataset CIFAR10 --trainTargetModel --trainShadowModel 
 ```
 
-* With pre-trained target and shadow models stored in the 'model' folder:
+Specify the dataset to be used as part of '--dataset' argument.
+
+
+* Membership inference attack with target,shadow model training enabled and using top 3 posteriors for training the attack model:
 ```
-$ python attack.py --dataset CIFAR10
+  python attack.py --dataset CIFAR10 --trainTargetModel --trainShadowModel  --need_topk
 ```
 
-* Details about all the arguments can be found using the following command:
+* Membership inference attack using pre-trained target and shadow models stored in the 'model' folder:
 ```
-$ python attack.py --help 
+  python attack.py --dataset CIFAR10
+```
+NOTE: To use the pre-trained target and shadow models provided by us, copy them from 'best_models' folder into 'model/{CIFAR10, MNIST}'.
+
+* Details about all the command line arguments can be found using the following command:
+```
+  python attack.py --help 
 ```
     usage: Membership Inference Attack [-h] [--dataset {CIFAR10,MNIST}]
                                        [--dataPath DATAPATH]
@@ -93,8 +97,9 @@ $ python attack.py --help
       --param_init          Flag to enable custom model params initialization
       --verbose             Add Verbosity
 
-## References:
 
+
+## References:
 1. Salem, A., Zhang, Y., Humbert, M., Berrang, P., Fritz, M. and Backes, M., 2018. Ml-leaks: Model and data independent membership inference attacks and defenses on machine learning models. arXiv preprint arXiv:1806.01246.
 2. Shokri, R., Stronati, M., Song, C. and Shmatikov, V., 2017, May. Membership inference attacks against machine learning models. In 2017 IEEE Symposium on Security and Privacy (SP) (pp. 3-18). IEEE.
 3. https://github.com/AhmedSalem2/ML-Leaks

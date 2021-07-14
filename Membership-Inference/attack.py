@@ -35,7 +35,7 @@ n_fc= [256, 128]
 #For CIFAR-10 and MNIST dataset
 num_classes = 10
 #No. of training epocs
-num_epochs = 30
+num_epochs = 50
 #how many samples per batch to load
 batch_size = 128
 #learning rate
@@ -57,7 +57,7 @@ n_hidden_mnist = 32
 ################################
 #Attack Model Hyperparameters
 ################################
-NUM_EPOCHS = 20
+NUM_EPOCHS = 50
 BATCH_SIZE = 10
 #Learning rate
 LR_ATTACK = 0.001 
@@ -293,10 +293,10 @@ def get_data_loader(dataset,
     print('Total Train samples in {} dataset : {}'.format(dataset, len(train_set)))  
     print('Number of Target train samples: {}'.format(len(t_train_sampler)))
     print('Number of Target valid samples: {}'.format(len(t_val_sampler)))
-    print('Number of Target out samples: {}'.format(len(t_out_sampler)))
+    print('Number of Target test samples: {}'.format(len(t_out_sampler)))
     print('Number of Shadow train samples: {}'.format(len(s_train_sampler)))
     print('Number of Shadow valid samples: {}'.format(len(s_val_sampler)))
-    print('Number of Shadow out samples: {}'.format(len(s_out_sampler)))
+    print('Number of Shadow test samples: {}'.format(len(s_out_sampler)))
    
 
     return t_train_loader, t_val_loader, t_out_loader, s_train_loader, s_val_loader, s_out_loader
