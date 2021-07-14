@@ -15,6 +15,8 @@ We perform a model inversion attack similar to Fredrikson et al. More concrete w
 This file contains our implementation of mi_face algorithm from Fredrikson et al. We perform a simple gradient descent, where we query the model with a random image, and the try to minimize 1-probability(label).
 
 ### How to run:
+
+* Please use the shipped dataset
 ##### To train the target model and get the resulting atnt-mlp-model.pt:
 `$ python target_model.py`
 
@@ -34,6 +36,7 @@ optional arguments:
   `--numberOfResults NUM_RESULTS default=one` choose between reconstructing one or all pictures
 
 * Code tested on Google Colab. Please use 'GPU' as the runtime type. 
+
 
 ## References
 1. Fredrikson, M., Jha, S. and Ristenpart, T., 2015, October. Model inversion attacks that exploit confidence information and basic countermeasures. In Proceedings of the 22nd ACM SIGSAC conference on computer and communications security (pp. 1322-1333)
