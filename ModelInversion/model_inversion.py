@@ -26,8 +26,8 @@ class MLP(nn.Module):
 def mi_face(label_index, num_iterations, gradient_step):
 
     # initialize two 112 * 92 tensors with zeros
-    tensor = torch.zeros(112, 92).unsqueeze(0)
-    image = torch.zeros(112, 92).unsqueeze(0)
+    tensor = torch.zeros(112, 92).unsqueeze(0).to('cpu')
+    image = torch.zeros(112, 92).unsqueeze(0).to('cpu')
 
 
     # initialize with infinity
@@ -58,7 +58,7 @@ def mi_face(label_index, num_iterations, gradient_step):
         # set image = tensor only if the new loss is the min from all iterations
         if loss < min_loss:
             min_loss = loss
-            image = tensor.detach().clone()
+            image = tensor.detach().clone().to('cpu')
 
     return image
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     print(args)
 
     # load the model and set it to eval mode
-    model = torch.load(args.modelPath)
+    model = torch.load(args.modelPath, map_location='cpu')
     model.eval()
 
     # set params
