@@ -23,7 +23,7 @@ This file contains our implementation of mi_face algorithm from Fredrikson et al
 ##### To perform the model inversion attack:
 `$ python model_inversion.py`
 
-`$ python model_inversion.py --numOfResults all` to display all reconstructed pictures from the dataset
+`$ python model_inversion.py --iterations 100 --numOfResults all` to display all reconstructed pictures from the dataset with 100 iterations
 
 optional arguments:
 
