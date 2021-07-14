@@ -37,7 +37,7 @@ optional arguments:
 
   `--numberOfResults NUM_RESULTS default=one` choose between reconstructing one or all pictures
 
-* Code tested on Google Colab. Please use 'GPU' as the runtime type. 
+* Code tested on Google Colab with runtime type as GPU. 
 
 
 ## References
