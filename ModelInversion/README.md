@@ -33,7 +33,7 @@ optional arguments:
 
   `--numberOfResults NUM_RESULTS default=one` choose between reconstructing one or all pictures
 
-* Code tested on Google Colab. Please use 'CPU' as the runtime type. 
+* Code tested on Google Colab. Please use 'GPU' as the runtime type. 
 
 ## References
 1. Fredrikson, M., Jha, S. and Ristenpart, T., 2015, October. Model inversion attacks that exploit confidence information and basic countermeasures. In Proceedings of the 22nd ACM SIGSAC conference on computer and communications security (pp. 1322-1333)
