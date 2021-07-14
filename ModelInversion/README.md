@@ -35,4 +35,8 @@ optional arguments:
 
 * Code tested on Google Colab. Please use 'CPU' as the runtime type. 
 
+## References
+1. Fredrikson, M., Jha, S. and Ristenpart, T., 2015, October. Model inversion attacks that exploit confidence information and basic countermeasures. In Proceedings of the 22nd ACM SIGSAC conference on computer and communications security (pp. 1322-1333)
+2. https://github.com/bentrevett/pytorch-image-classification/blob/master/1_mlp.ipynb
+3. https://github.com/Lab41/cyphercat
 
