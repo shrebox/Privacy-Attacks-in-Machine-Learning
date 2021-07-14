@@ -13,7 +13,8 @@ import torchvision.datasets as datasets
 SEED = 12
 torch.manual_seed(SEED)
 torch.cuda.manual_seed(SEED)
-torch.backends.cudnn.deterministic = True
+#torch.backends.cudnn.deterministic = True
+
 
 class MLP(nn.Module):
     def __init__(self, input_dim, output_dim):
@@ -96,7 +97,7 @@ if __name__ == '__main__':
                                 ])
 
     # load dataset
-    atnt_faces = datasets.ImageFolder("data_pgm/faces", transform=transform)
+    atnt_faces = datasets.ImageFolder('data_pgm', transform=transform)
 
     # split dataset: 3 images of every class as validation set
     i = [i for i in range(len(atnt_faces)) if i % 10 > 3]
@@ -122,17 +123,19 @@ if __name__ == '__main__':
 
     # set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print('Using device: %s'%device)
     mlp = mlp.to(device)
 
     # set criterion and optimizer
     criterion = nn.CrossEntropyLoss()
-    criterion = criterion.to(device)
+    #criterion = criterion.to(device)
     optimizer = optim.Adam(mlp.parameters())
 
     # main loop
     EPOCHS = 30
     best_valid_loss = float('inf')
-
+    
+    print('---Target Model Training Started---')
     for epoch in range(EPOCHS):
 
         train_loss, train_acc = train(mlp, train_data_loader, optimizer, criterion, device)
@@ -146,3 +149,4 @@ if __name__ == '__main__':
         print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc*100:.2f}%')
         
+    print('---Target Model Training Done---')

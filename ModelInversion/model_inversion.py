@@ -2,39 +2,45 @@ import random
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
+from target_model import MLP
 
 import argparse
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('Using device: %s'%device)
 
-class MLP(nn.Module):
+# class MLP(nn.Module):
 
-    def __init__(self, input_dim, output_dim):
-        super().__init__()
+#     def __init__(self, input_dim, output_dim):
+#         super().__init__()
 
-        self.input_fc = nn.Linear(input_dim, 3000)
-        self.output_fc = nn.Linear(3000, output_dim)
+#         self.input_fc = nn.Linear(input_dim, 3000)
+#         self.output_fc = nn.Linear(3000, output_dim)
 
-    def forward(self, x):
-        batch_size = x.shape[0]
-        x = x.view(batch_size, -1)
-        h = torch.sigmoid(self.input_fc(x))
-        output = self.output_fc(h)
+#     def forward(self, x):
+#         batch_size = x.shape[0]
+#         x = x.view(batch_size, -1)
+#         h = torch.sigmoid(self.input_fc(x))
+#         output = self.output_fc(h)
 
-        return output, h
+#         return output, h
 
 
-def mi_face(label_index, num_iterations, gradient_step):
-
+def mi_face(label_index, model, num_iterations, gradient_step):
+    
+    model.to(device)
+    model.eval()
+    
     # initialize two 112 * 92 tensors with zeros
-    tensor = torch.zeros(112, 92).unsqueeze(0).to('cpu')
-    image = torch.zeros(112, 92).unsqueeze(0).to('cpu')
-
-
+    tensor = torch.zeros(112, 92).unsqueeze(0).to(device)
+    image = torch.zeros(112, 92).unsqueeze(0).to(device)
+    
     # initialize with infinity
     min_loss = float("inf")
 
     for i in range(num_iterations):
         tensor.requires_grad = True
+        
         # get the prediction probs
         pred, _ = model(tensor)
 
@@ -42,13 +48,13 @@ def mi_face(label_index, num_iterations, gradient_step):
         if args.lossFunction == "crossEntropy":
             # use this
             crit = nn.CrossEntropyLoss()
-            loss = crit(pred, torch.tensor([label_index]))
+            loss = crit(pred, torch.tensor([label_index]).to(device))
         else:
             # or this
             soft_pred = nn.functional.softmax(pred, 1)
             loss = soft_pred.squeeze()[label_index]
-
         print('Loss: ' + str(loss.item()))
+        
         loss.backward()
 
         with torch.no_grad():
@@ -77,9 +83,9 @@ if __name__ == '__main__':
     print(args)
 
     # load the model and set it to eval mode
-    model = torch.load(args.modelPath, map_location='cpu')
-    model.eval()
-
+    #model = torch.load(args.modelPath, map_location='cpu')
+    model = torch.load(args.modelPath)
+    
     # set params
     gradient_step_size = 0.1
 
@@ -87,19 +93,20 @@ if __name__ == '__main__':
     if args.numberOfResults == 'one':
         # create figure
         fig, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, sharey=True)
-        reconstruction = mi_face(0, args.iterations, gradient_step_size)
+        #reconstruction for class 0
+        reconstruction = mi_face(0, model, args.iterations, gradient_step_size)
         ran = random.randint(1, 2)
-        path = 'data_pgm/faces/s0' + str(1) + '/' + str(
-                     ran) + '.pgm' if 0 < 10 else 'data_pgm/faces/s' + str(0) + '/' + str(ran) + '.pgm'
+        path = 'data_pgm/s0' + str(1) + '/' + str(
+                     ran) + '.pgm' if 0 < 10 else 'data_pgm/s' + str(0) + '/' + str(ran) + '.pgm'
 
         with open(path, 'rb') as f:
             original = plt.imread(f)
         # add both images to the plot
         ax1.imshow(original, cmap='gray')
-        ax1.set_title('original')
+        ax1.set_title('Sample train set image')
         ax1.axis('off')
         ax2.imshow(reconstruction.squeeze().detach().numpy(), cmap='gray')
-        ax2.set_title('reconstructed')
+        ax2.set_title('Reconstructed image')
         ax2.axis('off')
 
         # plot reconstructed image
@@ -107,6 +114,9 @@ if __name__ == '__main__':
             args.iterations) + ' iterations of mi_face. ', fontsize=15)
         fig.savefig('results/results_' + str(args.iterations) + '.png', dpi=100)
         plt.show()
+        print('Reconstruction Results can be found in results folder')
+        
+        
     else:
         # print all pictures
         # create figure
@@ -121,14 +131,14 @@ if __name__ == '__main__':
                 print('Reconstructing Class ' + str(count))
 
                 ran = random.randint(1, 2)
-                path = 'data_pgm/faces/s0' + str(count) + '/' + str(
-                    ran) + '.pgm' if count < 10 else 'data_pgm/faces/s' + str(count) + '/' + str(ran) + '.pgm'
+                path = 'data_pgm/s0' + str(count) + '/' + str(
+                    ran) + '.pgm' if count < 10 else 'data_pgm/s' + str(count) + '/' + str(ran) + '.pgm'
 
                 with open(path, 'rb') as f:
                     original = plt.imread(f)
 
                 # reconstruct respective class
-                reconstruction = mi_face(count - 1, args.iterations, gradient_step_size)
+                reconstruction = mi_face(count - 1, model, args.iterations, gradient_step_size)
 
 
                 # add both images to the plot
@@ -139,7 +149,8 @@ if __name__ == '__main__':
 
         # plot reconstructed image
         fig.suptitle('Images reconstructed with ' + str(
-            args.iterations) + ' iterations of mi_face. Find the reconstruction below the respective original.', fontsize=20)
+            args.iterations) + ' iterations of mi_face. Find the reconstruction below each row with train set samples.', fontsize=20)
         fig.savefig('results/results_' + str(args.iterations) + '.png', dpi=100)
         plt.show()
+        print('Reconstruction Results can be found in results folder')
 
