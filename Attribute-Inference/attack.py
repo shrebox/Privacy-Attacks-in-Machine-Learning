@@ -123,7 +123,7 @@ def perform_train_dummy(target_epochs, attack_epochs):
     target_model_path = 'Attribute-Inference/models/target_model_' + str(target_epochs) + '.pth'
     attack_model_path = 'Attribute-Inference/models/attack_model_' + str(attack_epochs) + '.pth' 
 
-    print('Training Target Model for ' + str(target_epochs) + ' ...')
+    print('Training Target Model for ' + str(target_epochs) + ' epochs...')
     training(target_epochs, target_train_loader, target_optimizer, target_criterion, target_model, target_model_path, True)
     target_model.to('cpu')
 
@@ -134,7 +134,7 @@ def perform_train_dummy(target_epochs, attack_epochs):
     test(target_test_loader, target_model, True)
     print('\n')
 
-    print('Training Attack Model' + str(attack_epochs) + ' ...')
+    print('Training Attack Model for ' + str(attack_epochs) + ' epochs...')
     training(attack_epochs, attack_train_loader, attack_optimizer, attack_criterion, attack_model, attack_model_path, False)
     attack_model.to('cpu')
 
@@ -145,14 +145,19 @@ def perform_train_dummy(target_epochs, attack_epochs):
     test(attack_test_loader, attack_model, False)
     test_class(attack_test_loader, attack_model, False)
 
-def perform_supply_target(target_epochs, attack_epochs):
+def perform_supply_target(class_file, state_path, attack_epochs):
 
-    target_model_path = 'Attribute-Inference/models/target_model_' + str(target_epochs) + '.pth'
-    attack_model_path = 'Attribute-Inference/models/attack_model_' + str(attack_epochs) + '.pth' 
+    try:
+        module = __import__(class_file, globals(), locals(), ['TargetModel'])
+    except ImportError:
+        print('Target model class could not be imported... Aborting!')
+        return
+    TargetModel = vars(module)['TargetModel']
 
-    print('Training Target Model for ' + str(target_epochs) + ' ...')
-    training(target_epochs, target_train_loader, target_optimizer, target_criterion, target_model, target_model_path, True)
-    target_model.to('cpu')
+    target_model_path = state_path
+    attack_model_path = 'Attribute-Inference/models/custom_attack_model_' + str(attack_epochs) + '.pth' 
+
+    target_model = TargetModel().to('cpu')
 
     print('Loading Target Model...')
     target_model.load_state_dict(torch.load(target_model_path))
@@ -161,7 +166,7 @@ def perform_supply_target(target_epochs, attack_epochs):
     test(target_test_loader, target_model, True)
     print('\n')
 
-    print('Training Attack Model' + str(attack_epochs) + ' ...')
+    print('Training Attack Model for ' + str(attack_epochs) + ' epochs...')
     training(attack_epochs, attack_train_loader, attack_optimizer, attack_criterion, attack_model, attack_model_path, False)
     attack_model.to('cpu')
 
@@ -171,3 +176,4 @@ def perform_supply_target(target_epochs, attack_epochs):
     print('Testing Attack Model...')
     test(attack_test_loader, attack_model, False)
     test_class(attack_test_loader, attack_model, False)
+
