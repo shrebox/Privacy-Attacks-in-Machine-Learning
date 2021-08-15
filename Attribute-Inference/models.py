@@ -3,11 +3,13 @@ import torch
 
 
 class AttackModel(nn.Module):
-    def __init__(self):
+    def __init__(self, dimension):
         super().__init__()
 
+        self.dimension = dimension
+
         self.classifier = nn.Sequential(
-            nn.Linear(64, 128),
+            nn.Linear(dimension, 128),
             nn.Tanh(),
             nn.Linear(128, 64),
             nn.Tanh(),
