@@ -39,6 +39,7 @@
   * Specifications for the target Model:
     * The target model should predict gender of a human [0: male, 1:female]
     * The target model should give the following output: `y, x` where y are the two posteriors and y is the last fully connected layer. E.g. `[ 5.0912e-01, -5.4544e-01], [-0.0656,  0.0087, -0.0543,  ...,  0.0134,  0.0608, -0.0347], [-0.0580, -0.0461, -0.0593,  ..., -0.0223, -0.1237,  0.1260]`
+    * TODO
 * Options:
   * `-c`, `--class_file` `TEXT`        File that holds the target models nn.Module class  [required]
   * `-s`, `--state_path` `TEXT`        Path of the state dictionary  [required]
