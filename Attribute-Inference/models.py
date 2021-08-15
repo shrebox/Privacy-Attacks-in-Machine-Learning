@@ -1,6 +1,9 @@
 import torch.nn as nn
 import torch
 
+SEED = 42
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
 
 class AttackModel(nn.Module):
     def __init__(self, dimension):

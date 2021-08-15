@@ -1,9 +1,14 @@
 import torch
 
+SEED = 42
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
+
 def training(epochs, dataloader, optimizer, criterion, net, path, is_target:bool):
     for epoch in range(epochs):
 
         running_loss = 0.0
+        print('Epoch ' + str(epoch + 1))
         for i, data in enumerate(dataloader, 0):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data.values()
@@ -22,8 +27,8 @@ def training(epochs, dataloader, optimizer, criterion, net, path, is_target:bool
             # print statistics
             running_loss += loss.item()
             if i % 20 == 19:    # print every 20 batches
-                print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 20))
+                #print('[%d, %5d] loss: %.3f' %
+                #      (epoch + 1, i + 1, running_loss / 20))
                 running_loss = 0.0
 
     torch.save(net.state_dict(), path)

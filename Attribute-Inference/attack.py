@@ -19,6 +19,8 @@ from datasets import UTKFace, AttackData
 #################
 
 SEED = 42
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
 PATH = 'Attribute-Inference/UTKFace/'
 TEST_SPLIT = 0.2
 ATTACK_SPLIT = 0.5 # 50% of training data

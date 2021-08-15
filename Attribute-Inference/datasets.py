@@ -2,6 +2,9 @@ from torch.utils.data import Dataset
 import torch
 import PIL
 
+SEED = 42
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
 
 class UTKFace(Dataset):
     """UTK Face dataset."""
