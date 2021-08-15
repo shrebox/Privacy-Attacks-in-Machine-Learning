@@ -1,3 +1,5 @@
+# https://gist.github.com/erykml/cf4e23cf3ab8897b287754dcb11e2f84#file-lenet_network-py
+
 import torch.nn as nn
 import torch
 

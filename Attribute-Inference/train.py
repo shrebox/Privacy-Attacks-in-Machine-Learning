@@ -1,3 +1,5 @@
+#  Based on https://github.com/pytorch/tutorials/blob/master/beginner_source/blitz/cifar10_tutorial.py
+
 import torch
 
 SEED = 42
