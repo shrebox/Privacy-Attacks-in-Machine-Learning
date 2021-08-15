@@ -10,7 +10,7 @@ import torch.optim as optim
 import copy
 import PIL
 
-from train import train, test
+from train import training, test, test_class
 from models import TargetModel, AttackModel
 from datasets import UTKFace, AttackData
 
@@ -53,75 +53,121 @@ attack_samples = samples.iloc[attack_indices]
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-LEARNING_RATE = 0.001
-BATCH_SIZE = 128
-EPOCHS = 30
+TARGET_LEARNING_RATE = 0.001
+TARGET_BATCH_SIZE = 128
+#EPOCHS = 30
 
 transform = transforms.Compose([
         transforms.Resize([50, 50]),
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-taget_model = TargetModel().to(DEVICE)
+target_model = TargetModel().to(DEVICE)
 target_criterion = nn.CrossEntropyLoss()
-target_optimizer = torch.optim.Adam(taget_model.parameters(), lr=LEARNING_RATE)
+target_optimizer = torch.optim.Adam(target_model.parameters(), lr=TARGET_LEARNING_RATE)
 
 target_train_loader = torch.utils.data.DataLoader(UTKFace(train_samples, 'gender', transform), 
-                                                batch_size=BATCH_SIZE)
+                                                    batch_size=TARGET_BATCH_SIZE)
 
 target_test_loader = torch.utils.data.DataLoader(UTKFace(test_samples, 'gender', transform), 
-                                                batch_size=BATCH_SIZE)
+                                                    batch_size=TARGET_BATCH_SIZE)
 
 ################
 # Attack Model #
 ################
 
-LEARNING_RATE = 0.001
-BATCH_SIZE = 128
+ATTACK_LEARNING_RATE = 0.001
+ATTACK_BATCH_SIZE = 128
+#EPOCHS = 50
 
 attack_model = AttackModel().to(DEVICE)
 attack_criterion = nn.CrossEntropyLoss()
-attack_optimizer = torch.optim.Adam(attack_model.parameters(), lr=LEARNING_RATE)
+attack_optimizer = torch.optim.Adam(attack_model.parameters(), lr=ATTACK_LEARNING_RATE)
 
-attack_train_loader = torch.utils.data.DataLoader(AttackData(attack_samples, taget_model, transform), 
-                                                batch_size=BATCH_SIZE)
-attack_test_loader = torch.utils.data.DataLoader(AttackData(test_samples, taget_model, transform), 
-                                            batch_size=BATCH_SIZE)
+attack_train_loader = torch.utils.data.DataLoader(AttackData(attack_samples, target_model, transform), 
+                                                    batch_size=ATTACK_BATCH_SIZE)
+attack_test_loader = torch.utils.data.DataLoader(AttackData(test_samples, target_model, transform), 
+                                                batch_size=ATTACK_BATCH_SIZE)
 
 
 ##################
 # Perform Attack #
 ##################
 
+def perform_pretrained_dummy():
 
+    target_model_path = 'Attribute-Inference/models/target_model_' + str(30) + '.pth'
+    attack_model_path = 'Attribute-Inference/models/attack_model_' + str(50) + '.pth' 
 
-def perform_attack(train: bool, epochs):
+    target_model.to('cpu')
 
-    target_model_path = 'Attribute-Inference/models/target_model_' + str(EPOCHS) + '.pth'
-    attack_model_path = './models/attack_model_' + str(epochs) + '.pth' 
-
-    if train:
-        print('Training Target Model:')
-        train.train(EPOCHS, target_train_loader, target_optimizer, target_criterion, attack_model, attack_model_path)
-    
-    print('Loading Target Model:')
-    target_model = TargetModel()
+    print('Loading Target Model...')
     target_model.load_state_dict(torch.load(target_model_path))
 
-    print('Testing Target Model:')
-    target_test_loader = torch.utils.data.DataLoader(UTKFace(test_samples, 'gender', transform), 
-                                            batch_size=BATCH_SIZE)
-    test(target_test_loader, target_model, False)
+    print('Testing Target Model...')
+    test(target_test_loader, target_model, True)
+    print('\n')
+
+    attack_model.to('cpu')
+
+    print('Loading Attack Model...')
+    attack_model.load_state_dict(torch.load(attack_model_path))
+
+    print('Testing Attack Model...')
+    test(attack_test_loader, attack_model, False)
+    test_class(attack_test_loader, attack_model, False)
 
 
-    if train:
-        print('Training Attack Model:')
-        train(epochs, attack_train_loader, attack_optimizer, attack_criterion, attack_model, attack_model_path)
+def perform_train_dummy(target_epochs, attack_epochs):
 
-    print('Loading Attack Model:')
-    attack_model = AttackModel()
-    net.load_state_dict(torch.load(attack_model_path))
+    target_model_path = 'Attribute-Inference/models/target_model_' + str(target_epochs) + '.pth'
+    attack_model_path = 'Attribute-Inference/models/attack_model_' + str(attack_epochs) + '.pth' 
 
-    print('Testing Attack Model')
-    train.test(attack_test_loader, attack_model, True)
+    print('Training Target Model for ' + str(target_epochs) + ' ...')
+    training(target_epochs, target_train_loader, target_optimizer, target_criterion, target_model, target_model_path, True)
+    target_model.to('cpu')
 
+    print('Loading Target Model...')
+    target_model.load_state_dict(torch.load(target_model_path))
+
+    print('Testing Target Model...')
+    test(target_test_loader, target_model, True)
+    print('\n')
+
+    print('Training Attack Model' + str(attack_epochs) + ' ...')
+    training(attack_epochs, attack_train_loader, attack_optimizer, attack_criterion, attack_model, attack_model_path, False)
+    attack_model.to('cpu')
+
+    print('Loading Attack Model...')
+    attack_model.load_state_dict(torch.load(attack_model_path))
+
+    print('Testing Attack Model...')
+    test(attack_test_loader, attack_model, False)
+    test_class(attack_test_loader, attack_model, False)
+
+def perform_supply_target(target_epochs, attack_epochs):
+
+    target_model_path = 'Attribute-Inference/models/target_model_' + str(target_epochs) + '.pth'
+    attack_model_path = 'Attribute-Inference/models/attack_model_' + str(attack_epochs) + '.pth' 
+
+    print('Training Target Model for ' + str(target_epochs) + ' ...')
+    training(target_epochs, target_train_loader, target_optimizer, target_criterion, target_model, target_model_path, True)
+    target_model.to('cpu')
+
+    print('Loading Target Model...')
+    target_model.load_state_dict(torch.load(target_model_path))
+
+    print('Testing Target Model...')
+    test(target_test_loader, target_model, True)
+    print('\n')
+
+    print('Training Attack Model' + str(attack_epochs) + ' ...')
+    training(attack_epochs, attack_train_loader, attack_optimizer, attack_criterion, attack_model, attack_model_path, False)
+    attack_model.to('cpu')
+
+    print('Loading Attack Model...')
+    attack_model.load_state_dict(torch.load(attack_model_path))
+
+    print('Testing Attack Model...')
+    test(attack_test_loader, attack_model, False)
+    test_class(attack_test_loader, attack_model, False)
