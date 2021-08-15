@@ -3,13 +3,17 @@ import sys
 
 sys.path.insert(1, 'Attribute-Inference')
 import attack
+sys.path.insert(1, 'ModelInversion')
+
+import model_inversion 
+
 
 @click.group()
 def cli():
     pass
 
 @cli.group()
-def attribute_inference():
+def attribute_inference(): 
     pass
 
 @attribute_inference.command(help='Load trained target and attack model')
@@ -27,10 +31,11 @@ def train_dummy(target_epochs, attack_epochs):
 @attribute_inference.command(help='Supply own target model and train attack model')
 @click.option('-c', '--class_file', required=True, type=str, help='Path of the models nn.Module class')
 @click.option('-s', '--state_path', required=True, type=str, help='Path of the state dictionary')
+@click.option('-d', '--dimension', required=True, type=int, help='Flattend dimension of the layer used as attack modelinput ')
 @click.option('-a', '--attack_epochs', default=50, type=int, help='Number of training epochs for the attack model')
-def supply_target(class_file, state_path, attack_epochs):
+def supply_target(class_file, state_path, dimension, attack_epochs):
     click.echo('Performing Attribute Inference')
-    attack.perform_supply_target(class_file, state_path, attack_epochs)
+    attack.perform_supply_target(class_file, state_path, dimension, attack_epochs)
 
 @cli.group()
 def membership_inference():

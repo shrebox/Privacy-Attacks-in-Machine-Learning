@@ -80,7 +80,7 @@ ATTACK_LEARNING_RATE = 0.001
 ATTACK_BATCH_SIZE = 128
 #EPOCHS = 50
 
-attack_model = AttackModel().to(DEVICE)
+attack_model = AttackModel(64).to(DEVICE)
 attack_criterion = nn.CrossEntropyLoss()
 attack_optimizer = torch.optim.Adam(attack_model.parameters(), lr=ATTACK_LEARNING_RATE)
 
@@ -145,12 +145,12 @@ def perform_train_dummy(target_epochs, attack_epochs):
     test(attack_test_loader, attack_model, False)
     test_class(attack_test_loader, attack_model, False)
 
-def perform_supply_target(class_file, state_path, attack_epochs):
+def perform_supply_target(class_file, state_path, dimension, attack_epochs):
 
     try:
         module = __import__(class_file, globals(), locals(), ['TargetModel'])
     except ImportError:
-        print('Target model class could not be imported... Aborting!')
+        print('Target model class could not be imported... Please check if file is inside "PETS-PROJECT/Attribute-Inference" and class name is "TargetModel"')
         return
     TargetModel = vars(module)['TargetModel']
 
@@ -165,6 +165,15 @@ def perform_supply_target(class_file, state_path, attack_epochs):
     print('Testing Target Model...')
     test(target_test_loader, target_model, True)
     print('\n')
+
+    attack_model = AttackModel(dimension).to(DEVICE)
+    attack_criterion = nn.CrossEntropyLoss()
+    attack_optimizer = torch.optim.Adam(attack_model.parameters(), lr=ATTACK_LEARNING_RATE)
+
+    attack_train_loader = torch.utils.data.DataLoader(AttackData(attack_samples, target_model, transform), 
+                                                        batch_size=ATTACK_BATCH_SIZE)
+    attack_test_loader = torch.utils.data.DataLoader(AttackData(test_samples, target_model, transform), 
+                                                batch_size=ATTACK_BATCH_SIZE)
 
     print('Training Attack Model for ' + str(attack_epochs) + ' epochs...')
     training(attack_epochs, attack_train_loader, attack_optimizer, attack_criterion, attack_model, attack_model_path, False)
