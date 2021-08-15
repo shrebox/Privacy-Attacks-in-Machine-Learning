@@ -29,7 +29,7 @@ def train_dummy(target_epochs, attack_epochs):
     attack.perform_train_dummy(target_epochs, attack_epochs)
 
 @attribute_inference.command(help='Supply own target model and train attack model')
-@click.option('-c', '--class_file', required=True, type=str, help='Path of the models nn.Module class')
+@click.option('-c', '--class_file', required=True, type=str, help='File that holds the target models nn.Module class')
 @click.option('-s', '--state_path', required=True, type=str, help='Path of the state dictionary')
 @click.option('-d', '--dimension', required=True, type=int, help='Flattend dimension of the layer used as attack modelinput ')
 @click.option('-a', '--attack_epochs', default=50, type=int, help='Number of training epochs for the attack model')
