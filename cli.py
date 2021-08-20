@@ -5,7 +5,7 @@ sys.path.insert(1, 'Attribute-Inference')
 import attack
 
 sys.path.insert(1, 'ModelInversion')
-import model_inversion
+from model_inversion import perform_pretrained_dummy
 
 
 @click.group()
@@ -56,7 +56,7 @@ def model_inversion():
 @model_inversion.command(help='load trained target model and perform inversion')
 def pretrained_dummy():
     click.echo('Performing model inversion with trained target model')
-    model_inversion.perform_pretrained_dummy()
+    perform_pretrained_dummy()
 
 
 @model_inversion.command(help='train target model')

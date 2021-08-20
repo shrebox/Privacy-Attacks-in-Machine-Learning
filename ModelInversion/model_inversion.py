@@ -219,8 +219,8 @@ def perform_attack_and_print_all_results(data_path, iterations, loss_function):
             print('Reconstructing Class ' + str(count))
 
             ran = random.randint(1, 2)
-            path = 'data_pgm/s0' + str(count) + '/' + str(
-                ran) + '.pgm' if count < 10 else 'data_pgm/s' + str(count) + '/' + str(ran) + '.pgm'
+            path = 'ModelInversion/data_pgm/s0' + str(count) + '/' + str(
+                ran) + '.pgm' if count < 10 else 'ModelInversion/data_pgm/s' + str(count) + '/' + str(ran) + '.pgm'
 
             with open(path, 'rb') as f:
                 original = plt.imread(f)
@@ -238,7 +238,7 @@ def perform_attack_and_print_all_results(data_path, iterations, loss_function):
     fig.suptitle('Images reconstructed with ' + str(
         iterations) + ' iterations of mi_face. Find the reconstruction below each row with train set samples.',
                  fontsize=20)
-    fig.savefig('results/results_' + str(iterations) + '.png', dpi=100)
+    fig.savefig('ModelInversion/results/results_' + str(iterations) + '.png', dpi=100)
     plt.show()
     print('Reconstruction Results can be found in results folder')
 
@@ -253,7 +253,7 @@ def perform_attack_and_print_one_result(target_model, iterations, loss_function,
     # reconstruction for class 0
     reconstruction = mi_face(number_of_results-1, model, iterations, gradient_step_size, loss_function)
     ran = random.randint(1, 2)
-    path = 'data_pgm/s0' + str(1) + '/' + str(
+    path = 'AttributeInference/data_pgm/s0' + str(1) + '/' + str(
         ran) + '.pgm' if 0 < 10 else 'data_pgm/s' + str(0) + '/' + str(ran) + '.pgm'
 
     with open(path, 'rb') as f:
