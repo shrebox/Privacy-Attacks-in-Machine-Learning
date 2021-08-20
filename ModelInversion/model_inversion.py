@@ -198,7 +198,12 @@ def perform_supply_target(class_file, iterations, loss_function, number_of_resul
 
 
 def perform_attack_and_print_all_results(data_path, iterations, loss_function):
-    model = torch.load(data_path)
+      # define dimensions
+    INPUT_DIM = 112 * 92
+    OUTPUT_DIM = 40
+
+    model = MLP(INPUT_DIM, OUTPUT_DIM)
+    model.load_state_dict(torch.load(data_path))
     gradient_step_size = 0.1
 
     # print all pictures
