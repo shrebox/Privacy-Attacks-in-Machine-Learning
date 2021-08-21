@@ -5,7 +5,7 @@ sys.path.insert(1, 'Attribute-Inference')
 import attack
 
 sys.path.insert(1, 'ModelInversion')
-from model_inversion import perform_pretrained_dummy
+import ModelInversion.model_inversion as mn
 
 
 @click.group()
@@ -56,7 +56,7 @@ def model_inversion():
 @model_inversion.command(help='load trained target model and perform inversion')
 def pretrained_dummy():
     click.echo('Performing model inversion with trained target model')
-    perform_pretrained_dummy()
+    mn.perform_pretrained_dummy()
 
 
 @model_inversion.command(help='train target model')
@@ -68,7 +68,7 @@ def pretrained_dummy():
               help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
 def train_dummy(iterations, epochs, loss_function, number_of_results):
     click.echo('Performing model inversion with training of target model')
-    model_inversion.perform_train_dummy(iterations, epochs, loss_function, number_of_results)
+    mn.perform_train_dummy(iterations, epochs, loss_function, number_of_results)
 
 
 # Todo: tag? and all?
@@ -81,7 +81,7 @@ def train_dummy(iterations, epochs, loss_function, number_of_results):
               help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
 def supply_target(class_file, iterations, loss_function, number_of_results):
     click.echo('performing Attribute Inference')
-    model_inversion.perform_supply_target(class_file, iterations, loss_function, number_of_results)
+    mn.perform_supply_target(class_file, iterations, loss_function, number_of_results)
 
 
 if __name__ == "__main__":

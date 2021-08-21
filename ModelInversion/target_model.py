@@ -89,13 +89,13 @@ def evaluate(mlp, iterator, criterion, device):
 
 
 def train_target_model(epochs):
+    # if __name__ == '__main__':
     # transfrom, wee need grayscale to convert the images to 1 channel
     transform = transforms.Compose([
         transforms.Grayscale(),
         transforms.ToTensor(),
         transforms.Normalize((0.5), (0.5))
     ])
-
     # load dataset
     atnt_faces = datasets.ImageFolder('ModelInversion/data_pgm', transform=transform)
 
@@ -143,10 +143,10 @@ def train_target_model(epochs):
 
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
-            torch.save(mlp, 'atnt-mlp-model.pt')
 
         print(f'Epoch: {epoch + 1:02}')
         print(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc * 100:.2f}%')
         print(f'\t Val. Loss: {valid_loss:.3f} |  Val. Acc: {valid_acc * 100:.2f}%')
 
+    torch.save(mlp.state_dict(), 'ModelInversion/atnt-mlp-model.pth')
     print('---Target Model Training Done---')

@@ -8,7 +8,9 @@ import argparse
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('Using device: %s' % device)
-
+# define dimensions
+INPUT_DIM = 112 * 92
+OUTPUT_DIM = 40
 
 # class MLP(nn.Module):
 
@@ -72,7 +74,7 @@ def mi_face(label_index, model, num_iterations, gradient_step, loss_function):
 #
 # def get_cmd_arguments():
 #     parser = argparse.ArgumentParser()
-#     parser.add_argument('--modelPath', default='atnt-mlp-model.pt', type=str, help='')
+#     parser.add_argument('--modelPath', default='atnt-mlp-model.pth', type=str, help='')
 #     parser.add_argument('--iterations', default='10', type=int, help='Number of Iterations')
 #     parser.add_argument('--lossFunction', default="crossEntropy", type=str, choices=['crossEntropy', 'softmax'], help='which loss function to use crossEntropy or softmax')
 #     parser.add_argument('--numberOfResults', default='one', type=str, choices=['one', 'all'], help='chose how many results between one and all')
@@ -157,15 +159,16 @@ def mi_face(label_index, model, num_iterations, gradient_step, loss_function):
 
 
 def perform_pretrained_dummy():
-    data_path = 'ModelInversion/atnt-mlp-model.pt'
+    data_path = 'ModelInversion/atnt-mlp-model.pth'
     epochs = 30
     loss_function = 'crossEntropy'
+
     perform_attack_and_print_all_results(data_path, epochs, loss_function)
 
 
 # Todo: input parameter for result
 def perform_train_dummy(iterations, epochs, loss_function, number_of_results):
-    data_path = 'ModelInversion/atnt-mlp-model.pt'
+    data_path = 'ModelInversion/atnt-mlp-model.pth'
 
     if number_of_results > 40 | number_of_results < -1 | number_of_results == 0:
         print('please provide a tag number between 1 and 40 or nothing for recover all')
@@ -198,10 +201,6 @@ def perform_supply_target(class_file, iterations, loss_function, number_of_resul
 
 
 def perform_attack_and_print_all_results(data_path, iterations, loss_function):
-      # define dimensions
-    INPUT_DIM = 112 * 92
-    OUTPUT_DIM = 40
-
     model = MLP(INPUT_DIM, OUTPUT_DIM)
     model.load_state_dict(torch.load(data_path))
     gradient_step_size = 0.1
@@ -244,7 +243,8 @@ def perform_attack_and_print_all_results(data_path, iterations, loss_function):
 
 
 def perform_attack_and_print_one_result(target_model, iterations, loss_function, number_of_results):
-    model = torch.load(target_model)
+    model = MLP(INPUT_DIM, OUTPUT_DIM)
+    model.load_state_dict(torch.load(target_model))
     # set params
     gradient_step_size = 0.1
 
@@ -253,8 +253,8 @@ def perform_attack_and_print_one_result(target_model, iterations, loss_function,
     # reconstruction for class 0
     reconstruction = mi_face(number_of_results-1, model, iterations, gradient_step_size, loss_function)
     ran = random.randint(1, 2)
-    path = 'AttributeInference/data_pgm/s0' + str(1) + '/' + str(
-        ran) + '.pgm' if 0 < 10 else 'data_pgm/s' + str(0) + '/' + str(ran) + '.pgm'
+    path = 'ModelInversion/data_pgm/s0' + str(1) + '/' + str(
+        ran) + '.pgm' if 0 < 10 else 'ModelInversion/data_pgm/s' + str(0) + '/' + str(ran) + '.pgm'
 
     with open(path, 'rb') as f:
         original = plt.imread(f)
@@ -269,6 +269,6 @@ def perform_attack_and_print_one_result(target_model, iterations, loss_function,
     # plot reconstructed image
     fig.suptitle('Images reconstructed with\n ' + str(
         iterations) + ' iterations of mi_face. ', fontsize=15)
-    fig.savefig('results/results_' + str(iterations) + '.png', dpi=100)
+    fig.savefig('ModelInversion/results/results_' + str(iterations) + '.png', dpi=100)
     plt.show()
     print('Reconstruction Results can be found in results folder')
