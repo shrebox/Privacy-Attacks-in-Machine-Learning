@@ -18,7 +18,7 @@ torch.cuda.manual_seed(SEED)
 # torch.backends.cudnn.deterministic = True
 
 
-class MLP(nn.Module):
+class TargetModel(nn.Module):
     def __init__(self, input_dim, output_dim):
         super().__init__()
 
@@ -119,7 +119,7 @@ def train_target_model(epochs):
     OUTPUT_DIM = 40
 
     # create model
-    mlp = MLP(INPUT_DIM, OUTPUT_DIM)
+    mlp = TargetModel(INPUT_DIM, OUTPUT_DIM)
 
     # set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

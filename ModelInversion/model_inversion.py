@@ -2,7 +2,7 @@ import random
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
-from target_model import MLP, train_target_model
+from target_model import TargetModel, train_target_model
 
 import argparse
 
@@ -161,7 +161,7 @@ def mi_face(label_index, model, num_iterations, gradient_step, loss_function):
 def perform_pretrained_dummy(iterations, loss_function, number_of_results):
     data_path = 'ModelInversion/atnt-mlp-model.pth'
 
-    model = MLP(INPUT_DIM, OUTPUT_DIM)
+    model = TargetModel(INPUT_DIM, OUTPUT_DIM)
     model.load_state_dict(torch.load(data_path))
 
     if number_of_results == -1:
@@ -183,7 +183,7 @@ def perform_train_dummy(iterations, epochs, loss_function, number_of_results):
     print('Training Target Model for ' + str(epochs) + ' epochs...')
     train_target_model(epochs)
 
-    model = MLP(INPUT_DIM, OUTPUT_DIM)
+    model = TargetModel(INPUT_DIM, OUTPUT_DIM)
     model.load_state_dict(torch.load(data_path))
 
     if number_of_results == -1:
@@ -197,14 +197,14 @@ def perform_train_dummy(iterations, epochs, loss_function, number_of_results):
 def perform_supply_target(class_file, target_model_path, iterations, loss_function, number_of_results):
 
     try:
-        module = __import__(class_file, globals(), locals(), ['MLP'])
+        module = __import__(class_file, globals(), locals(), ['TargetModel'])
     except ImportError:
         print('Target model class could not be imported... Please check if file is inside "PETS-PROJECT/ModelInversion" and class name is "TargetModel"')
         return
 
-    TargetModel = vars(module)['MLP']
+    TargetModel = vars(module)['TargetModel']
 
-    target_model = TargetModel().to('cpu')
+    target_model = TargetModel(INPUT_DIM, OUTPUT_DIM).to('cpu')
     print('Loading Target Model...')
     target_model.load_state_dict(torch.load(target_model_path))
 
