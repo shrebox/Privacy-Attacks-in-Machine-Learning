@@ -58,7 +58,7 @@ def model_inversion():
 @click.option('--loss_function', default="crossEntropy", type=click.Choice(['crossEntropy', 'softmax']),
               help='which loss function to use crossEntropy or softmax')
 @click.option('--generate_specific_class', default=-1, type=int,
-              help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
+              help='choose class, number between 1 and 40, which you want recovered or nothing to get all recovered')
 def pretrained_dummy(iterations, loss_function, generate_specific_class):
     click.echo('Performing model inversion with trained target model')
     mn.perform_pretrained_dummy(iterations, loss_function, generate_specific_class)
@@ -70,7 +70,7 @@ def pretrained_dummy(iterations, loss_function, generate_specific_class):
 @click.option('--loss_function', default="crossEntropy", type=click.Choice(['crossEntropy', 'softmax']),
               help='which loss function to use crossEntropy or softmax')
 @click.option('--generate_specific_class', default=-1, type=int,
-              help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
+              help='choose class, number between 1 and 40, which you want recovered or nothing to get all recovered')
 def train_dummy(iterations, epochs, loss_function, generate_specific_class):
     click.echo('Performing model inversion with training of target model')
     mn.perform_train_dummy(iterations, epochs, loss_function, generate_specific_class)
@@ -84,7 +84,7 @@ def train_dummy(iterations, epochs, loss_function, generate_specific_class):
 @click.option('--loss_function', default="crossEntropy", type=click.Choice(['crossEntropy', 'softmax']),
               help='which loss function to use crossEntropy or softmax')
 @click.option('--generate_specific_class', default=-1, type=int,
-              help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
+              help='choose class, number between 1 and 40, which you want recovered or nothing to get all recovered')
 def supply_target(class_file, target_model_path, iterations, loss_function, generate_specific_class):
     click.echo('performing Model Inversion')
     mn.perform_supply_target(class_file, target_model_path, iterations, loss_function, generate_specific_class)

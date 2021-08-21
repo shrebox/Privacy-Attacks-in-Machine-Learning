@@ -62,32 +62,31 @@ def perform_pretrained_dummy(iterations, loss_function, generate_specific_class)
     model.load_state_dict(torch.load(data_path))
 
     if generate_specific_class == -1:
-        print('start model inversion for all tags')
+        print('\nStart model inversion for all classes\n')
         perform_attack_and_print_all_results(model, iterations, loss_function)
     else:
-        print('start model inversion for ' + str(generate_specific_class) + 'tag')
+        print('\nstart model inversion for class ' + str(generate_specific_class) + '\n')
         perform_attack_and_print_one_result(model, iterations, loss_function, generate_specific_class)
 
 
-# Todo: input parameter for result
 def perform_train_dummy(iterations, epochs, loss_function, generate_specific_class):
     data_path = 'ModelInversion/atnt-mlp-model.pth'
 
     if generate_specific_class > 40 | generate_specific_class < -1 | generate_specific_class == 0:
-        print('please provide a tag number between 1 and 40 or nothing for recover all')
+        print('please provide a class number between 1 and 40 or nothing for recover all')
         return
 
-    print('Training Target Model for ' + str(epochs) + ' epochs...')
+    print('\nTraining Target Model for ' + str(epochs) + ' epochs...')
     train_target_model(epochs)
 
     model = TargetModel(INPUT_DIM, OUTPUT_DIM)
     model.load_state_dict(torch.load(data_path))
 
     if generate_specific_class == -1:
-        print('start model inversion for all tags')
+        print('\nStart model inversion for all classes\n')
         perform_attack_and_print_all_results(model, iterations, loss_function)
     else:
-        print('start model inversion for ' + str(generate_specific_class) + 'tag')
+        print('\nStart model inversion for class ' + str(generate_specific_class) + '\n')
         perform_attack_and_print_one_result(model, iterations, loss_function, generate_specific_class)
 
 
@@ -106,14 +105,14 @@ def perform_supply_target(class_file, target_model_path, iterations, loss_functi
     target_model.load_state_dict(torch.load(target_model_path))
 
     if generate_specific_class > 40 | generate_specific_class < -1 | generate_specific_class == 0:
-        print('please provide a tag number between 1 and 40 or nothing for recover all')
+        print('please provide a class number between 1 and 40 or nothing for recover all')
         return
 
     if generate_specific_class == -1:
-        print('start model inversion for all tags')
+        print('\nStart model inversion for all classes\n')
         perform_attack_and_print_all_results(target_model, iterations, loss_function)
     else:
-        print('start model inversion for ' + str(generate_specific_class) + 'tag')
+        print('\nstart model inversion for class ' + str(generate_specific_class) + '\n' )
         perform_attack_and_print_one_result(target_model, iterations, loss_function, generate_specific_class)
 
 
