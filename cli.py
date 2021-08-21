@@ -57,11 +57,11 @@ def model_inversion():
 @click.option('--iterations', default=30, help='Number of Iterations in attack')
 @click.option('--loss_function', default="crossEntropy", type=click.Choice(['crossEntropy', 'softmax']),
               help='which loss function to use crossEntropy or softmax')
-@click.option('--number_of_results', default=-1, type=int,
+@click.option('--generate_specific_class', default=-1, type=int,
               help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
-def pretrained_dummy(iterations, loss_function, number_of_results):
+def pretrained_dummy(iterations, loss_function, generate_specific_class):
     click.echo('Performing model inversion with trained target model')
-    mn.perform_pretrained_dummy(iterations, loss_function, number_of_results)
+    mn.perform_pretrained_dummy(iterations, loss_function, generate_specific_class)
 
 
 @model_inversion.command(help='train target model')
@@ -69,11 +69,11 @@ def pretrained_dummy(iterations, loss_function, number_of_results):
 @click.option('--epochs', default=30, help='Number of epochs for the target model')
 @click.option('--loss_function', default="crossEntropy", type=click.Choice(['crossEntropy', 'softmax']),
               help='which loss function to use crossEntropy or softmax')
-@click.option('--number_of_results', default=-1, type=int,
+@click.option('--generate_specific_class', default=-1, type=int,
               help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
-def train_dummy(iterations, epochs, loss_function, number_of_results):
+def train_dummy(iterations, epochs, loss_function, generate_specific_class):
     click.echo('Performing model inversion with training of target model')
-    mn.perform_train_dummy(iterations, epochs, loss_function, number_of_results)
+    mn.perform_train_dummy(iterations, epochs, loss_function, generate_specific_class)
 
 
 # Todo: tag? and all?
@@ -83,11 +83,11 @@ def train_dummy(iterations, epochs, loss_function, number_of_results):
 @click.option('--iterations', default=30, type=int, help='Number of Iterations in the attack')
 @click.option('--loss_function', default="crossEntropy", type=click.Choice(['crossEntropy', 'softmax']),
               help='which loss function to use crossEntropy or softmax')
-@click.option('--number_of_results', default=-1, type=int,
+@click.option('--generate_specific_class', default=-1, type=int,
               help='choose Tag, number between 1 and 40, which you want recovered or nothing to get all recovered')
-def supply_target(class_file, target_model_path, iterations, loss_function, number_of_results):
+def supply_target(class_file, target_model_path, iterations, loss_function, generate_specific_class):
     click.echo('performing Model Inversion')
-    mn.perform_supply_target(class_file, target_model_path, iterations, loss_function, number_of_results)
+    mn.perform_supply_target(class_file, target_model_path, iterations, loss_function, generate_specific_class)
 
 
 if __name__ == "__main__":
