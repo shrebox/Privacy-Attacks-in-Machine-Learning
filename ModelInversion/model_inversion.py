@@ -253,8 +253,8 @@ def perform_attack_and_print_one_result(target_model, iterations, loss_function,
     # reconstruction for class 0
     reconstruction = mi_face(number_of_results-1, model, iterations, gradient_step_size, loss_function)
     ran = random.randint(1, 2)
-    path = 'ModelInversion/data_pgm/s0' + str(1) + '/' + str(
-        ran) + '.pgm' if 0 < 10 else 'ModelInversion/data_pgm/s' + str(0) + '/' + str(ran) + '.pgm'
+    path = 'ModelInversion/data_pgm/s0' + str(number_of_results) + '/' + str(
+        ran) + '.pgm' if 0 < 10 else 'ModelInversion/data_pgm/s' + str(number_of_results) + '/' + str(ran) + '.pgm'
 
     with open(path, 'rb') as f:
         original = plt.imread(f)
