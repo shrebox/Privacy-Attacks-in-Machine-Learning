@@ -158,12 +158,18 @@ def mi_face(label_index, model, num_iterations, gradient_step, loss_function):
 #         print('Reconstruction Results can be found in results folder')
 
 
-def perform_pretrained_dummy():
+def perform_pretrained_dummy(iterations, loss_function, number_of_results):
     data_path = 'ModelInversion/atnt-mlp-model.pth'
-    epochs = 30
-    loss_function = 'crossEntropy'
 
-    perform_attack_and_print_all_results(data_path, epochs, loss_function)
+    model = MLP(INPUT_DIM, OUTPUT_DIM)
+    model.load_state_dict(torch.load(data_path))
+
+    if number_of_results == -1:
+        print('start model inversion for all tags')
+        perform_attack_and_print_all_results(model, iterations, loss_function)
+    else:
+        print('start model inversion for ' + str(number_of_results) + 'tag')
+        perform_attack_and_print_one_result(model, iterations, loss_function, number_of_results)
 
 
 # Todo: input parameter for result
@@ -177,16 +183,30 @@ def perform_train_dummy(iterations, epochs, loss_function, number_of_results):
     print('Training Target Model for ' + str(epochs) + ' epochs...')
     train_target_model(epochs)
 
+    model = MLP(INPUT_DIM, OUTPUT_DIM)
+    model.load_state_dict(torch.load(data_path))
+
     if number_of_results == -1:
         print('start model inversion for all tags')
-        perform_attack_and_print_all_results(data_path, iterations, loss_function)
+        perform_attack_and_print_all_results(model, iterations, loss_function)
     else:
         print('start model inversion for ' + str(number_of_results) + 'tag')
-        perform_attack_and_print_one_result(data_path, iterations, loss_function, number_of_results)
+        perform_attack_and_print_one_result(model, iterations, loss_function, number_of_results)
 
 
-def perform_supply_target(class_file, iterations, loss_function, number_of_results):
-    data_path = class_file
+def perform_supply_target(class_file, target_model_path, iterations, loss_function, number_of_results):
+
+    try:
+        module = __import__(class_file, globals(), locals(), ['MLP'])
+    except ImportError:
+        print('Target model class could not be imported... Please check if file is inside "PETS-PROJECT/ModelInversion" and class name is "TargetModel"')
+        return
+
+    TargetModel = vars(module)['MLP']
+
+    target_model = TargetModel().to('cpu')
+    print('Loading Target Model...')
+    target_model.load_state_dict(torch.load(target_model_path))
 
     if number_of_results > 40 | number_of_results < -1 | number_of_results == 0:
         print('please provide a tag number between 1 and 40 or nothing for recover all')
@@ -194,15 +214,14 @@ def perform_supply_target(class_file, iterations, loss_function, number_of_resul
 
     if number_of_results == -1:
         print('start model inversion for all tags')
-        perform_attack_and_print_all_results(data_path, iterations, loss_function)
+        perform_attack_and_print_all_results(target_model, iterations, loss_function)
     else:
         print('start model inversion for ' + str(number_of_results) + 'tag')
-        perform_attack_and_print_one_result(data_path, iterations, loss_function, number_of_results)
+        perform_attack_and_print_one_result(target_model, iterations, loss_function, number_of_results)
 
 
-def perform_attack_and_print_all_results(data_path, iterations, loss_function):
-    model = MLP(INPUT_DIM, OUTPUT_DIM)
-    model.load_state_dict(torch.load(data_path))
+def perform_attack_and_print_all_results(model, iterations, loss_function):
+
     gradient_step_size = 0.1
 
     # print all pictures
@@ -242,9 +261,7 @@ def perform_attack_and_print_all_results(data_path, iterations, loss_function):
     print('Reconstruction Results can be found in results folder')
 
 
-def perform_attack_and_print_one_result(target_model, iterations, loss_function, number_of_results):
-    model = MLP(INPUT_DIM, OUTPUT_DIM)
-    model.load_state_dict(torch.load(target_model))
+def perform_attack_and_print_one_result (model,  iterations, loss_function, number_of_results):
     # set params
     gradient_step_size = 0.1
 
