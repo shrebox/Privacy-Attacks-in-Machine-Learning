@@ -24,9 +24,9 @@ Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06l
   * `train-plus-dummy`       Train target, shadow and attack model + augmentation, topk posteriors, parameter initialization and verbose enabled
 
 * Options:
-  * `--dataset TEXT`     Which dataset to use (CIFAR10 or MNIST) [Default = CIFAR10]
-  * `--data_path TEXT`   Path to store data [Default = 'Membership-Inference/data']
-  * `--model_path TEXT`  Path to save or load model checkpoints [Default = 'Membership-Inference/model']
+  * `--dataset TEXT`     Which dataset to use (CIFAR10 or MNIST) [default = CIFAR10]
+  * `--data_path TEXT`   Path to store data [default = 'Membership-Inference/data']
+  * `--model_path TEXT`  Path to save or load model checkpoints [default = 'Membership-Inference/model']
   * `--help`   Show this message and exit.
 
 * Example commands:
