@@ -10,11 +10,6 @@ Timeline: https://docs.google.com/spreadsheets/d/1dKo0ajoctzqFjUMUhbgnqzykvuLyO6
 
 Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06lATwA-hMAecLLGZL-DNDFRd0/edit?usp=sharing
 
-
-###########################################################################################################
-###########################################################################################################
-
-
 # Membership Inference
 
 ## How to run
@@ -38,11 +33,6 @@ Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06l
   * `$ python cli.py membership-inference pretrained-dummy --dataset MNIST --data_path PATH1 --model_path PATH2`
   * `$ python cli.py membership-inference train-dummy`
   * `$ python cli.py membership-inference train-plus-dummy`
-
-
-###########################################################################################################
-###########################################################################################################
-
 
 # Attribute Inference
 
@@ -102,11 +92,6 @@ Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06l
 
 * Example command:
   * `$ python cli.py attribute-inference supply-target -c af_models -s Attribute-Inference/models/target_model_30.pth -d 64 -a 50`
-
-
-###########################################################################################################
-###########################################################################################################
-
 
 # Model Inversion
 
@@ -173,12 +158,5 @@ Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06l
 
 * Example command:
   * `$ python cli.py model-inversion supply-target --class_file target_model --target_model_path ModelInversion/atnt-mlp-model.pth --generate_specific_class 25`
-
-
-  ###########################################################################################################
-  ###########################################################################################################
-
-
-
 
 
