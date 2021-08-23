@@ -1,4 +1,4 @@
-This repository is a course project for 'Privacy Enhancing Technologies' offered at Saarland University by Prof. Yang Zhang @ CISPA, Saarbrücken, Germany.
+This repository contains implementation of Membership Inference, Attribute Inference and Model Inversion as a part of course project for 'Privacy Enhancing Technologies' offered at Saarland University by Prof. Yang Zhang @ CISPA, Saarbrücken, Germany.
 
 Course homepage: https://cms.cispa.saarland/pets2021/
 
