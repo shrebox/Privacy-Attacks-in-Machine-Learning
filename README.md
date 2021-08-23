@@ -10,6 +10,8 @@ Timeline: https://docs.google.com/spreadsheets/d/1dKo0ajoctzqFjUMUhbgnqzykvuLyO6
 
 Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06lATwA-hMAecLLGZL-DNDFRd0/edit?usp=sharing
 
+Note: There are two implementation versions of the CLI. The other implementation can be found in 'CLI_ver2' folder.
+
 # Membership Inference
 
 ## How to run
