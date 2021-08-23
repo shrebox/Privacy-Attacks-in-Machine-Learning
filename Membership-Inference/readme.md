@@ -1,6 +1,7 @@
 ## Overview
 
-This is the implementation of Membership Inference Attack (Adversay 1) from ML Leaks [1] paper. In this setting, the attacker/ adversary aims to determine whether a data sample is used to train a ML model(aka target model) or not. In the implementation we have assumed the adversary knows the training data distribution of the target model as well as its architecture and hyperparameters used to train the model.  
+This is the implementation of Membership Inference Attack (Adversay 1) from ML Leaks [1] paper. In this setting, the attacker/ adversary aims to determine whether a data sample is used to train a ML model(aka target model) or not. In the implementation we have assumed the adversary knows the training data distribution of the target model as well as its architecture and hyperparameters used to train the model. 
+
 
 ## Dataset
 CIFAR10, MNIST from Pytorch dataset library
@@ -48,7 +49,7 @@ NOTE: We have provided the best models from our test run. They are in the 'best_
 ## Run Experiements:
 
 NOTE : 1) Keep all the code (.py) files in the same folder before starting the execution.
-       2) For phase 1 evluation, kindly run the commands as provided.
+       2) For running without the 'cli.py', uncomment the '__main__' function in the attack.py and run the attack using the below commands.
 
 * Membership inference attack with target and shadow model training enabled:
 ```

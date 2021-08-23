@@ -15,13 +15,10 @@ Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06l
 ## How to run
 `$ python cli.py membership-inference [OPTIONS] COMMAND [ARGS]...`
 
-* Options:
-  * `--help`  Show this message and exit.
-
 * Commands:
   * `pretrained-dummy`  Load trained target and shadow model and train attack model
   * `train-dummy`     Train target, shadow and attack model
-  * `train-plus-dummy`       Train target, shadow and attack model + augmentation, topk posteriors, parameter initialization and verbose enabled
+  * `train-plus-dummy`       Train target, shadow and attack model + augmentation, topk posteriors, parameter initialization and verbose enabled (check note below)
 
 * Options:
   * `--dataset TEXT`     Which dataset to use (CIFAR10 or MNIST) [default = CIFAR10]
@@ -30,9 +27,17 @@ Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06l
   * `--help`   Show this message and exit.
 
 * Example commands:
-  * `$ python cli.py membership-inference pretrained-dummy --dataset MNIST --data_path PATH1 --model_path PATH2`
+  * `$ python cli.py membership-inference pretrained-dummy --dataset MNIST --model_path Membership-Inference/best_models/`
   * `$ python cli.py membership-inference train-dummy`
-  * `$ python cli.py membership-inference train-plus-dummy`
+  * `$ python cli.py membership-inference train-plus-dummy --need_topk --param_init`
+
+  * Note:
+    * `Membership-Inference/model` and `Membership-Inference/data` folders are generated while training.
+    * `train-plus-dummy` has additional optional options which works as flags if mentioned:
+      * `--need_augm`        To use data augmentation on target and shadow training set or not
+      * `--need_topk`        Flag to enable using Top 3 posteriors for attack data
+      * `--param_init`       Flag to enable custom model params initialization
+      * `--verbose`          Add Verbosity
 
 # Attribute Inference
 
@@ -158,5 +163,3 @@ Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06l
 
 * Example command:
   * `$ python cli.py model-inversion supply-target --class_file target_model --target_model_path ModelInversion/atnt-mlp-model.pth --generate_specific_class 25`
-
-

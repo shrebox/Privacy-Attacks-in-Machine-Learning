@@ -359,13 +359,13 @@ def attack_inference(model,
 
 
 #Main Method to initate model training and attack
-def create_attack(args):
+def create_attack(dataset, dataPath, modelPath, trainTargetModel, trainShadowModel, need_augm, need_topk, param_init, verbose):
  
-    dataset = args.dataset
-    need_augm = args.need_augm
-    verbose = args.verbose
+    dataset = dataset
+    need_augm = need_augm
+    verbose = verbose
     #For using top 3 posterior probabilities 
-    top_k = args.need_topk
+    top_k = need_topk
 
     if dataset == 'CIFAR10':
         img_size = 32
@@ -375,8 +375,8 @@ def create_attack(args):
         img_size = 28
         input_dim = 1
 
-    datasetDir = os.path.join(args.dataPath,dataset)
-    modelDir = os.path.join(args.modelPath, dataset)  
+    datasetDir = os.path.join(dataPath,dataset)
+    modelDir = os.path.join(modelPath, dataset)  
     
     #Create dataset and model directories
     if not os.path.exists(datasetDir):
@@ -405,20 +405,20 @@ def create_attack(args):
                                                                 num_workers)
     
      
-    if (args.trainTargetModel):
+    if (trainTargetModel):
 
         if dataset == 'CIFAR10':            
             target_model = model.TargetNet(input_dim,target_filters,img_size,num_classes).to(device)
         else:
             target_model = model.MNISTNet(input_dim, n_hidden_mnist, num_classes).to(device)
 
-        if (args.param_init):
+        if (param_init):
             #Initialize params
             target_model.apply(w_init) 
         
         
         # Print the model we just instantiated
-        if args.verbose:
+        if verbose:
             print('----Target Model Architecure----')
             print(target_model)
             print('----Model Learnable Params----')
@@ -465,7 +465,7 @@ def create_attack(args):
         targetX = t_trainX + t_testX
         targetY = t_trainY + t_testY
 
-    if (args.trainShadowModel):
+    if (trainShadowModel):
 
         if dataset == 'CIFAR10':
             shadow_model = model.ShadowNet(input_dim,shadow_filters,img_size,num_classes).to(device)
@@ -474,12 +474,12 @@ def create_attack(args):
             n_shadow_hidden = 16 
             shadow_model = model.MNISTNet(input_dim,n_shadow_hidden,num_classes).to(device)
 
-        if (args.param_init):
+        if (param_init):
             #Initialize params
             shadow_model.apply(w_init)
 
         # Print the model we just instantiated
-        if args.verbose:
+        if verbose:
             print('----Shadow Model Architecure---')
             print(shadow_model)
             print('---Model Learnable Params----')
@@ -537,7 +537,7 @@ def create_attack(args):
     
     attack_model = model.AttackMLP(input_size,n_hidden,out_classes).to(device)
     
-    if (args.param_init):
+    if (param_init):
         #Initialize params
         attack_model.apply(w_init)
 
@@ -564,9 +564,9 @@ def create_attack(args):
     #Inference on trained attack model
     attack_inference(attack_model, targetX, targetY, device)
 
-if __name__ == '__main__':
-    #get command line arguments from the user
-    args = get_cmd_arguments()
-    print(args)
-    #Generate Membership inference attack1
-    create_attack(args)
+# if __name__ == '__main__':
+#     #get command line arguments from the user
+#     args = get_cmd_arguments()
+#     print(args)
+#     #Generate Membership inference attack1
+#     create_attack(args)

@@ -1,5 +1,9 @@
 # Attribute Inference
 
+In attribute inference attack, more precisely micro property inference attack, we are attacking a target model which is trained to predict the gender of a person. The micro property we try to infer is the race of a person.
+
+Download link to required data pickle file 'UTKFaceDF.pkl': https://drive.google.com/file/d/1DcGkGKP7ry89gNpg3kHspG99OErksf67/view?usp=sharing. Please download this and put it in the 'Attribute-Inference/' folder.
+
 ## How to run
 `$ python cli.py attribute-inference [OPTIONS] COMMAND [ARGS]...`
 

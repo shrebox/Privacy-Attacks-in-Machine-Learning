@@ -130,7 +130,7 @@ def perform_attack_and_print_all_results(model, iterations, loss_function):
         for j in range(10):
             # get random validation set image from respective class
             count += 1
-            print('Reconstructing Class ' + str(count))
+            print('\nReconstructing Class ' + str(count))
 
             ran = random.randint(1, 2)
             path = 'ModelInversion/data_pgm/s0' + str(count) + '/' + str(
@@ -154,7 +154,7 @@ def perform_attack_and_print_all_results(model, iterations, loss_function):
                  fontsize=20)
     fig.savefig('ModelInversion/results/results_' + str(iterations) + '.png', dpi=100)
     plt.show()
-    print('Reconstruction Results can be found in results folder')
+    print('\nReconstruction Results can be found in results folder')
 
 
 def perform_attack_and_print_one_result (model,  iterations, loss_function, generate_specific_class):
