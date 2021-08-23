@@ -1,12 +1,6 @@
 This repository contains implementation of `Membership Inference`, `Attribute Inference` and `Model Inversion` as a part of course project for 'Privacy Enhancing Technologies' offered at Saarland University by Prof. Yang Zhang @ CISPA, Saarbrücken, Germany.
 
-Course homepage: https://cms.cispa.saarland/pets2021/
-
-Project guidelines: https://docs.google.com/document/d/141wj_FKeYANgSlLN2ECfQgMCdQgV_bTsiT82GYtNp6Y/edit?usp=sharing
-
-Project references: https://docs.google.com/document/d/1pcAXpFTQDd4hGnLlhSa4PsQSv3HDJ8avuR-5pppO9NA/edit?usp=sharing
-
-Results and Inferences: https://docs.google.com/document/d/18JmdYclua216xaiem06lATwA-hMAecLLGZL-DNDFRd0/edit?usp=sharing
+[Course homepage](https://cms.cispa.saarland/pets2021/) | [Project guidelines](https://docs.google.com/document/d/141wj_FKeYANgSlLN2ECfQgMCdQgV_bTsiT82GYtNp6Y/edit?usp=sharing) | [Project references](https://docs.google.com/document/d/1pcAXpFTQDd4hGnLlhSa4PsQSv3HDJ8avuR-5pppO9NA/edit?usp=sharing) | [Results and Inferences](https://docs.google.com/document/d/18JmdYclua216xaiem06lATwA-hMAecLLGZL-DNDFRd0/edit?usp=sharing)
 
 Note: There are two implementation versions of the CLI. The other implementation can be found in 'CLI_ver2' folder.
 
