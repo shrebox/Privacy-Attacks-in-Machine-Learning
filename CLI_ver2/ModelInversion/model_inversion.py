@@ -99,7 +99,7 @@ def label_reconstruction(dataPath, modelPath, model_file, label_idx, iterations)
 
     # Print only one picture
     if (label_idx >=1 and label_idx <= 40):
-        print('Reconstruction for Label Index [{}] from Dataset'.format(label_idx - 1))
+        print('Reconstruction for Label Index [{}] from Dataset'.format(label_idx))
         # create figure
         fig, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, sharey=True)
         #reconstruction for class 0
