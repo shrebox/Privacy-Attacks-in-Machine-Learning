@@ -112,3 +112,37 @@
 9. https://github.com/Lab41/cyphercat
 10. https://github.com/harveyslash/Facial-Similarity-with-Siamese-Networks-in-Pytorch
 11. https://susanqq.github.io/UTKFace/
+
+
+We would also like to provide supplemental information that we felt would help in smoother testing and provide more clarity in understanding the CLI structure better:
+
+Common for all attacks:
+
+1) '--inference' flag enables evaluation of the attack model provided by us with the user-specified pre-trained target model. No model training is done in this step.
+
+2) The attack models for the 3 attacks are saved under the 'model/<dataset>' folder. They are saved with name 'best_attack_model.ckpt'. When running the end-to-end attack, they will be overwritten if the user doesn't specify a different model folder path. The default path is './model'.
+
+3)  Both trained target and attack model files should be in the same folder for running attack evaluation. Also, do not rename the attack model files provided.
+
+4) For attack evaluation, a user has to define the model class in 'model.py' and instantiate the class so that the model structure matches with the pre-trained target model.
+
+Membership Inference:
+
+5) The attack model provided for membership inference is trained on top 10 posteriors. For attack evaluation, we will fetch the top 10 posteriors from the target model. (Default case)
+
+6) We do not ask for the dataset from the user for membership inference. Both CIFAR10 and MNIST datasets would be downloaded from Pytorch, if not present under <dataPath>/<dataset> folder. The data loaders are prepared according to the predefined splits in the code.
+This behaviour is the same for both end-to-end training or attack evaluation. The reason for this design decision is to avoid any errors with the parsing of user-specified dataset files.
+
+7) For membership inference, user can provide their own data and model path. We will download the datasets from Pytorch on the specified data folder, and the model checkpoints will be saved in the given model path. Note that for all attacks, the model files will be saved within the <dataset> folder either inside the default or user-specified model path.
+
+Attribute Inference:
+
+8) We expect the UTKFace dataset to be saved as a '.npz' file. Please use 'load_data.py' to generate the file from the UTKFace dataset or you can use the file we provided under the 'data/UTKFace' folder.
+
+Model Inversion:
+
+9) We use the AT&T dataset provided in the 'data_pgm' folder under 'ModelInversion'. As the dataset is not provided by Pytorch or any other open-source library and is not easily available, there are chances that it can be saved in different ways. To avoid any parsing errors, we have saved it in a structure that we expect at the time of parsing during the test run. Kindly do not move the data to any different folder or change the structure.
+
+10) Reconstruction files will be saved under './results' folder during the test run.
+
+11) For model inversion, a user should give label_idx as -1 to reconstruct all the 40 classes in the dataset, else specified the class label to be reconstructed.
