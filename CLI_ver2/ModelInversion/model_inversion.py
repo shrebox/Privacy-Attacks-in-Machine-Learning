@@ -103,10 +103,10 @@ def label_reconstruction(dataPath, modelPath, model_file, label_idx, iterations)
         # create figure
         fig, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, sharey=True)
         #reconstruction for class 0
-        reconstruction = mi_face(label_idx, model, iterations, gradient_step_size)
+        reconstruction = mi_face(label_idx-1, model, iterations, gradient_step_size)
         ran = random.randint(1, 2)
         path = dataPath + 'data_pgm/s0' + str(1) + '/' + str(
-                     ran) + '.pgm' if 0 < 10 else dataPath + 'data_pgm/s' + str(0) + '/' + str(ran) + '.pgm'
+                     ran) + '.pgm' if label_idx < 10 else dataPath + 'data_pgm/s' + str(label_idx) + '/' + str(ran) + '.pgm'
 
         with open(path, 'rb') as f:
             original = plt.imread(f)
