@@ -98,22 +98,6 @@
 
 * Example: `$ python attack.py --attack ModelInv --dataset ATTFace --inference --dataPath ./ModelInversion/ --modelPath ./model/ATTFace/ --modelCkpt atnt-mlp-model.pt --label_idx 40 --num_iter 30`
 
-
-
-## References:
-1. Salem, A., Zhang, Y., Humbert, M., Berrang, P., Fritz, M. and Backes, M., 2018. Ml-leaks: Model and data independent membership inference attacks and defenses on machine learning models. arXiv preprint arXiv:1806.01246.
-2. Shokri, R., Stronati, M., Song, C. and Shmatikov, V., 2017, May. Membership inference attacks against machine learning models. In 2017 IEEE Symposium on Security and Privacy (SP) (pp. 3-18). IEEE.
-3. Fredrikson, M., Jha, S. and Ristenpart, T., 2015, October. Model inversion attacks that exploit confidence information and basic countermeasures. In Proceedings of the 22nd ACM SIGSAC conference on computer and communications security (pp. 1322-1333)
-4. LeCun, Yann, et al. "Backpropagation applied to handwritten zip code recognition." Neural computation 1.4 (1989): 541-551.
-5. Song, Congzheng, and Vitaly Shmatikov. "Overlearning reveals sensitive attributes." arXiv preprint arXiv:1905.11742 (2019).
-6. https://github.com/AhmedSalem2/ML-Leaks
-7. https://github.com/Lab41/cyphercat
-8. https://github.com/bentrevett/pytorch-image-classification/blob/master/1_mlp.ipynb
-9. https://github.com/Lab41/cyphercat
-10. https://github.com/harveyslash/Facial-Similarity-with-Siamese-Networks-in-Pytorch
-11. https://susanqq.github.io/UTKFace/
-
-
 We would also like to provide supplemental information that we felt would help in smoother testing and provide more clarity in understanding the CLI structure better:
 
 Common for all attacks:
@@ -146,3 +130,16 @@ Model Inversion:
 10) Reconstruction files will be saved under './results' folder during the test run.
 
 11) For model inversion, a user should give label_idx as -1 to reconstruct all the 40 classes in the dataset, else specified the class label to be reconstructed.
+	
+## References:
+1. Salem, A., Zhang, Y., Humbert, M., Berrang, P., Fritz, M. and Backes, M., 2018. Ml-leaks: Model and data independent membership inference attacks and defenses on machine learning models. arXiv preprint arXiv:1806.01246.
+2. Shokri, R., Stronati, M., Song, C. and Shmatikov, V., 2017, May. Membership inference attacks against machine learning models. In 2017 IEEE Symposium on Security and Privacy (SP) (pp. 3-18). IEEE.
+3. Fredrikson, M., Jha, S. and Ristenpart, T., 2015, October. Model inversion attacks that exploit confidence information and basic countermeasures. In Proceedings of the 22nd ACM SIGSAC conference on computer and communications security (pp. 1322-1333)
+4. LeCun, Yann, et al. "Backpropagation applied to handwritten zip code recognition." Neural computation 1.4 (1989): 541-551.
+5. Song, Congzheng, and Vitaly Shmatikov. "Overlearning reveals sensitive attributes." arXiv preprint arXiv:1905.11742 (2019).
+6. https://github.com/AhmedSalem2/ML-Leaks
+7. https://github.com/Lab41/cyphercat
+8. https://github.com/bentrevett/pytorch-image-classification/blob/master/1_mlp.ipynb
+9. https://github.com/Lab41/cyphercat
+10. https://github.com/harveyslash/Facial-Similarity-with-Siamese-Networks-in-Pytorch
+11. https://susanqq.github.io/UTKFace/
