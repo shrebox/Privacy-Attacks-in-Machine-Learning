@@ -9,7 +9,7 @@ Contents:
 
 ### target_model.py
 * Our target model is a simple MLP based on the PyTorch Tutorial form lecture and https://github.com/bentrevett/pytorch-image-classification/blob/master/1_mlp.ipynb and the ATNT-Dataset from https://github.com/harveyslash/Facial-Similarity-with-Siamese-Networks-in-Pytorch. 
-* Pre-trained model 'atnt-mlp-model.pth' can be downloaded from https://drive.google.com/file/d/1RI1b7SdLH7pQ0kui1bmxezvSygAiShjo/view?usp=sharing and put in the 'ModelInversion/' folder.
+* Pre-trained model 'atnt-mlp-model.pth' can be downloaded from https://drive.google.com/file/d/10Swb7sddVHNJWqBe3Bx3zaUifSy1it1r/view?usp=sharing and put in the 'ModelInversion/' folder.
 
 ### model_inversion.py
 We perform a model inversion attack similar to Fredrikson et al. More concrete we perform an reconstruction attack, where given a label we reconstruct an image of the respective class.
